@@ -1,0 +1,32 @@
+Name:               semantics-pipeline
+Version:            0.1.0
+Synopsis:           Utilities used to execute Haskell's semantics
+License:            MIT
+License-file:       LICENSE
+Author:             David Lazar
+Maintainer:         David Lazar <lazar6@illinois.edu>
+Category:           Language
+Build-type:         Simple
+Cabal-version:      >=1.6
+
+Flag static
+  Description:      Build a static binary
+  Default:          False
+
+Executable hs2k
+  Hs-source-dirs:   src
+  Main-is:          hs2k.hs
+  Build-depends:    base >= 4 && < 5, haskell-src-exts, language-k >= 0.2.0, generic-k
+  ghc-options:      -Wall
+
+  if flag(static)
+    ghc-options:    -static -optl-static -optl-pthread
+
+Executable k2hs
+  Hs-source-dirs:   src
+  Main-is:          k2hs.hs
+  Build-depends:    base >= 4 && < 5, haskell-src-exts, language-k >= 0.2.0, generic-k
+  ghc-options:      -Wall
+
+  if flag(static)
+    ghc-options:    -static -optl-static -optl-pthread
