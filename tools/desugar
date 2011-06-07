@@ -1,0 +1,2 @@
+#!/bin/sh
+hs2k | simplemaude "%s" haskell-desugaring-test-compiled.maude | k2hs
