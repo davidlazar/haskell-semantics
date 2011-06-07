@@ -35,6 +35,13 @@ kmod HASKELL-DESUGARING is
 
 
     /*
+    (e) is equivalent to e.
+    */
+
+    macro Paren E = E
+
+
+    /*
     Arithmetic sequences satisfy these identities:
     [e1 ..]        = enumFrom e1
     [e1, e2 ..]    = enumFromThen e1 e2
