@@ -16,7 +16,6 @@ module Data.Generics.K.ToK where
 import Data.Char (ord)
 import Data.Generics
 import Language.K.Core.Syntax
-import Language.K.Core.Pretty.KMode
 
 toK :: (Data a) => a -> K
 toK = defaultToK
