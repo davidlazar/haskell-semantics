@@ -1,2 +1,3 @@
 #!/bin/sh
-hs2k | simplemaude "%s" haskell-desugaring-test-compiled.maude | k2hs
+# TODO: remove sed from the pipeline (currently used to trim leading whitespace)
+hs2k | simplemaude "[[ %s ]]" haskell-desugaring-test-compiled.maude | cellstoxml | xpath "//k/text()" | sed 's/^[ \t]*//' | k2hs
