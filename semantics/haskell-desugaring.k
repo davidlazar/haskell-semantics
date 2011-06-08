@@ -1,8 +1,20 @@
 kmod HASKELL-DESUGARING is
     including HASKELL-SYNTAX
     including K
+    including PL-CONVERSION
+
+    configuration
+        <T>
+            <k> .K </k>
+            <fresh> 0 </fresh>
+        </T>
+
+
+    syntax Bag ::= [[ K ]]
+    macro [[ K:K ]] = <T_> <k> K:K </k> <_/T>
 
     kvar E E1 E2 E3 : Exp
+    kvar N : Int
 
     syntax SrcLoc ::= `NoLoc
     macro NoLoc = SrcLoc "<unknown.hs>" 0 0
@@ -20,6 +32,30 @@ kmod HASKELL-DESUGARING is
     syntax Exp ::= fromInfix QOp
     macro fromInfix(QVarOp QN:QName) = Var QN:QName
     macro fromInfix(QConOp QN:QName) = Con QN:QName
+
+    /*
+    The following identities hold:
+    (op e) = \ x -> x op e
+    (e op) = \ x -> e op x
+    where op is a binary operator, e is an expression, and x is a variable that
+    does not occur free in e.
+    */
+
+    rule <k>
+             RightSection Q:QOp E =>
+               Lambda NoLoc ((:) (PVar (Ident FreshId)) [])
+                 (InfixApp (Var (UnQual (Ident FreshId))) Q:QOp E)
+         <_/k>
+         <fresh> N => N +Int 1 </fresh>
+         where FreshId = ("@x" +String Int2String(N))
+
+    rule <k>
+             LeftSection E Q:QOp =>
+               Lambda NoLoc ((:) (PVar (Ident FreshId)) [])
+                 (InfixApp E Q:QOp (Var (UnQual (Ident FreshId))))
+         <_/k>
+         <fresh> N => N +Int 1 </fresh>
+         where FreshId = ("@x" +String Int2String(N))
 
     /*
     The following identity holds:
