@@ -6,11 +6,11 @@
 kmod HASKELL-SYNTAX-STRUCTS is
     including K
 
-    syntax HsList ::= []
-                    | (:) K HsList
+    syntax HsList ::= []           [hybrid]
+                    | (:) K HsList [strict hybrid]
 
-    syntax HsMaybe ::= `Just K
-                     | `Nothing
+    syntax HsMaybe ::= `Nothing    [hybrid]
+                     | `Just K     [strict hybrid]
 
     syntax HsTuple ::= (,) K K
 

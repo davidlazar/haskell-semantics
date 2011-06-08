@@ -184,7 +184,7 @@ data SrcLoc = SrcLoc
                             (Maybe [ExportSpec]) [ImportDecl] [Decl]
 */
 
-    syntax Module ::= `Module SrcLoc ModuleName HsList HsMaybe HsMaybe HsList HsList
+    syntax Module ::= `Module SrcLoc ModuleName HsList HsMaybe HsMaybe HsList HsList [strict(7) hybrid]
 
 /*
     -- | An item in a module's export specification.
@@ -344,7 +344,7 @@ data SrcLoc = SrcLoc
                   | `SpliceDecl SrcLoc Exp
                   | `TypeSig SrcLoc HsList Type
                   | `FunBind HsList
-                  | `PatBind SrcLoc Pat HsMaybe Rhs Binds
+                  | `PatBind SrcLoc Pat HsMaybe Rhs Binds               [strict(4) hybrid]
                   | `ForImp SrcLoc CallConv Safety String Name Type
                   | `ForExp SrcLoc CallConv String Name Type
                   | `RulePragmaDecl SrcLoc HsList
@@ -496,7 +496,7 @@ data SrcLoc = SrcLoc
                             -- ^ guarded right hand side (/gdrhs/)
 */
 
-    syntax Rhs ::= `UnGuardedRhs Exp
+    syntax Rhs ::= `UnGuardedRhs Exp    [strict hybrid]
                  | `GuardedRhss HsList
 
 /*
@@ -695,22 +695,22 @@ data SrcLoc = SrcLoc
         | RightArrHighApp Exp Exp   -- ^ higher-order arrow application (from right): /exp/ @>>-@ /exp/
 */
 
-    syntax Exp ::= `Var QName
+    syntax Exp ::= `Var QName                   [hybrid]
                  | `IPVar IPName
                  | `Con QName
                  | `Lit Literal
                  | `InfixApp Exp QOp Exp
-                 | `App Exp Exp
+                 | `App Exp Exp                 [strict hybrid]
                  | `NegApp Exp
-                 | `Lambda SrcLoc HsList Exp
+                 | `Lambda SrcLoc HsList Exp    [strict(3) hybrid]
                  | `Let Binds Exp
                  | `If Exp Exp Exp
                  | `Case Exp HsList
                  | `Do HsList
                  | `MDo HsList
-                 | `Tuple HsList
+                 | `Tuple HsList                [strict hybrid]
                  | `TupleSection HsList
-                 | `ListExp HsList
+                 | `ListExp HsList              [strict hybrid]
                  | `Paren Exp
                  | `LeftSection Exp QOp
                  | `RightSection QOp Exp
