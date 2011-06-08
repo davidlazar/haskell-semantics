@@ -18,6 +18,7 @@ import Data.Char (chr)
 import Data.Generics
 import Text.Printf
 import Language.K.Core.Syntax
+import Language.Haskell.Exts.Syntax -- Issue 198 (see below)
 
 fromK :: (Data a) => K -> a
 fromK = defaultFromK
@@ -26,6 +27,13 @@ fromK = defaultFromK
     `extR` kToBool
     `extR` kToString
     `extR` kToChar
+    `extR` kToLiteral -- Issue 198 (see below)
+
+-- Workaround for Issue 198 in K.
+kToLiteral :: K -> Literal
+kToLiteral (KApp (KLabel (Syntax "IntLit" : _)) [KApp (KInt i) []]) = Int i
+kToLiteral (KApp (KLabel (Syntax "StringLit" : _)) [KApp (KString s) []]) = String s
+kToLiteral k = defaultFromK k
 
 kToInt :: K -> Int
 kToInt (KApp (KInt i) []) = fromIntegral i

@@ -16,6 +16,7 @@ module Data.Generics.K.ToK where
 import Data.Char (ord)
 import Data.Generics
 import Language.K.Core.Syntax
+import Language.Haskell.Exts.Syntax -- Issue 198 (see below)
 
 toK :: (Data a) => a -> K
 toK = defaultToK
@@ -33,6 +34,13 @@ toKLabel = defaultToKLabel
     `extQ` KBool        -- Bool
     `extQ` intToKLabel  -- Int
     `extQ` charToKLabel -- Char
+    `extQ` literalToKLabel -- Issue 198 (see below)
+
+-- Workaround for Issue 198 in K.
+literalToKLabel :: Literal -> KLabel
+literalToKLabel (Int _) = KLabel [Syntax "IntLit", Hole]
+literalToKLabel (String _) = KLabel [Syntax "StringLit", Hole]
+literalToKLabel l = defaultToKLabel l
 
 intToKLabel :: Int -> KLabel
 intToKLabel = KInt . fromIntegral

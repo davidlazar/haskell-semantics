@@ -616,8 +616,8 @@ data SrcLoc = SrcLoc
 */
 
     syntax Literal ::= `Char Int
-                     | `String String
-                     | `Int Int
+                     | `StringLit String
+                     | `IntLit Int
                      | `Frac HsRational
                      | `PrimInt Int
                      | `PrimWord Int
