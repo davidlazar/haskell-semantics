@@ -65,6 +65,17 @@ kmod HASKELL-SYNTAX is
                | GuardedAlts
                | GuardedAlt
 
+    syntax KResult ::= QName
+                     | SrcLoc
+                     | Type
+                     | Pat
+                     | Binds
+                     | ModuleName
+                     | ModulePragma
+                     | ExportSpec
+                     | WarningText
+                     | ImportDecl
+
 
 // Imported from Language.Haskell.Exts.SrcLoc:
 /*
