@@ -710,8 +710,7 @@ data SrcLoc = SrcLoc
                  | `MDo HsList
                  | `Tuple HsList
                  | `TupleSection HsList
-                 // TODO: Conflict with built-in Lists:
-                 //| `List HsList
+                 | `ListExp HsList
                  | `Paren Exp
                  | `LeftSection Exp QOp
                  | `RightSection QOp Exp

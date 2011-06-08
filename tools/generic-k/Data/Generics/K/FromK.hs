@@ -28,6 +28,11 @@ fromK = defaultFromK
     `extR` kToString
     `extR` kToChar
     `extR` kToLiteral -- Issue 198 (see below)
+    `extR` kToExp
+
+kToExp :: K -> Exp
+kToExp (KApp (KLabel (Syntax "ListExp" : _)) ks) = fromConstrK (toConstr (List [])) ks
+kToExp k = defaultFromK k
 
 -- Workaround for Issue 198 in K.
 kToLiteral :: K -> Literal

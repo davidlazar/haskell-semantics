@@ -35,6 +35,11 @@ toKLabel = defaultToKLabel
     `extQ` intToKLabel  -- Int
     `extQ` charToKLabel -- Char
     `extQ` literalToKLabel -- Issue 198 (see below)
+    `extQ` expToKLabel
+
+expToKLabel :: Exp -> KLabel
+expToKLabel (List es) = KLabel [Syntax "ListExp", Hole]
+expToKLabel e = defaultToKLabel e
 
 -- Workaround for Issue 198 in K.
 literalToKLabel :: Literal -> KLabel
