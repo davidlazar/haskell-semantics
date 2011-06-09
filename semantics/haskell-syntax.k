@@ -69,7 +69,6 @@ kmod HASKELL-SYNTAX is
                      | SrcLoc
                      | Type
                      | Pat
-                     | Binds
                      | ModuleName
                      | ModulePragma
                      | ExportSpec
@@ -398,7 +397,7 @@ data SrcLoc = SrcLoc
         | IPBinds [IPBind]  -- ^ A binding group for implicit parameters
 */
 
-    syntax Binds ::= `BDecls HsList
+    syntax Binds ::= `BDecls HsList     [strict hybrid]
                    | `IPBinds HsList
 
 /*
