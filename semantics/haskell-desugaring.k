@@ -4,10 +4,11 @@ kmod HASKELL-DESUGARING is
     including PL-CONVERSION
 
     configuration
-        <T>
+        <T multiplicity="?">
             <k> .K </k>
             <fresh> 0 </fresh>
         </T>
+        <result multiplicity="?"> .K </result>
 
 
     syntax Bag ::= [[ K ]]
