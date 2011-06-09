@@ -24,4 +24,8 @@ kmod HASKELL-SYNTAX-STRUCTS is
                | HsTuple
                | HsRational
 
+    syntax KResult ::= Int
+                     | Bool
+                     | String
+
 endkm
