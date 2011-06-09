@@ -715,7 +715,7 @@ data SrcLoc = SrcLoc
                  | `Lambda SrcLoc HsList Exp    [strict(3) hybrid]
                  | `Let Binds Exp               [strict hybrid]
                  | `If Exp Exp Exp
-                 | `Case Exp HsList
+                 | `Case Exp HsList             [strict hybrid]
                  | `Do HsList
                  | `MDo HsList
                  | `Tuple HsList                [strict hybrid]
@@ -1040,7 +1040,7 @@ data SrcLoc = SrcLoc
         = Alt SrcLoc Pat GuardedAlts Binds
 */
 
-    syntax Alt ::= `Alt SrcLoc Pat GuardedAlts Binds
+    syntax Alt ::= `Alt SrcLoc Pat GuardedAlts Binds  [strict(3 4) hybrid]
 
 /*
     -- | The right-hand sides of a @case@ alternative,
@@ -1051,8 +1051,8 @@ data SrcLoc = SrcLoc
         | GuardedAlts  [GuardedAlt] -- ^ /gdpat/
 */
 
-    syntax GuardedAlts ::= `UnGuardedAlt Exp
-                         | `GuardedAlts HsList
+    syntax GuardedAlts ::= `UnGuardedAlt Exp    [strict hybrid]
+                         | `GuardedAlts HsList  // TODO
 
 /*
     -- | A guarded case alternative @|@ /stmts/ @->@ /exp/.
