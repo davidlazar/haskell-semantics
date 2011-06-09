@@ -626,10 +626,10 @@ data SrcLoc = SrcLoc
         | PrimString String     -- ^ unboxed string literal
 */
 
-    syntax Literal ::= `Char Int
-                     | `StringLit String
+    syntax Literal ::= `Char Int                [hybrid]
+                     | `StringLit String        [hybrid]
                      | `IntLit Int
-                     | `Frac HsRational
+                     | `Frac HsRational         [hybrid]
                      | `PrimInt Int
                      | `PrimWord Int
                      | `PrimFloat HsRational
@@ -709,7 +709,7 @@ data SrcLoc = SrcLoc
     syntax Exp ::= `Var QName                   [hybrid]
                  | `IPVar IPName
                  | `Con QName
-                 | `Lit Literal
+                 | `Lit Literal                 [hybrid]
                  | `InfixApp Exp QOp Exp
                  | `App Exp Exp                 [strict hybrid]
                  | `NegApp Exp
