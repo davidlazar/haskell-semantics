@@ -14,7 +14,7 @@ kmod HASKELL-SYNTAX-STRUCTS is
 
     syntax HsTuple ::= (,) K K
 
-    syntax HsRational ::= :% Int Int
+    syntax HsRational ::= :% Int Int  [hybrid]
 
     syntax K ::= Int
                | Bool
