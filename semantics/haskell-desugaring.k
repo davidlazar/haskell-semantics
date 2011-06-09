@@ -14,6 +14,14 @@ kmod HASKELL-DESUGARING is
     syntax Bag ::= [[ K ]]
     macro [[ K:K ]] = <T_> <k> K:K </k> <_/T>
 
+    syntax KResultLabel ::= desugared
+    syntax K ::= desugaredProgram List{K}
+
+    rule <T_> <k> KR:KResult </k> <_/T> =>
+           <result> desugaredProgram(eraseKLabel(desugared, KR:KResult)) </result>
+
+    rule desugaredProgram(K:K) => K:K
+
     kvar E E1 E2 E3 : Exp
     kvar N : Int
 
