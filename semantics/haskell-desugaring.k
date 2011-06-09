@@ -23,10 +23,18 @@ kmod HASKELL-DESUGARING is
     rule desugaredProgram(K:K) => K:K
 
     kvar E E1 E2 E3 : Exp
-    kvar N : Int
+    kvar I N : Int
 
     syntax SrcLoc ::= `NoLoc
     macro NoLoc = SrcLoc "<unknown.hs>" 0 0
+
+    /*
+    The integer literal i is equivalent to fromInteger i, where fromInteger is
+    a method in class Num (see Section 6.4.1).
+    */
+
+    rule <k> Lit (IntLit I) => desugared(App (Var (UnQual (Ident "fromInteger"))) (Lit (IntLit I))) <_/k>
+
 
     /*
     The following identities hold:
