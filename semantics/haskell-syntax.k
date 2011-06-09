@@ -708,7 +708,7 @@ data SrcLoc = SrcLoc
 
     syntax Exp ::= `Var QName                   [hybrid]
                  | `IPVar IPName
-                 | `Con QName
+                 | `Con QName                   [hybrid]
                  | `Lit Literal                 [hybrid]
                  | `InfixApp Exp QOp Exp
                  | `App Exp Exp                 [strict hybrid]
