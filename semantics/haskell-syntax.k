@@ -354,7 +354,7 @@ data SrcLoc = SrcLoc
                   | `DefaultDecl SrcLoc HsList
                   | `SpliceDecl SrcLoc Exp
                   | `TypeSig SrcLoc HsList Type
-                  | `FunBind HsList
+                  | `FunBind HsList                                     [strict hybrid]
                   | `PatBind SrcLoc Pat HsMaybe Rhs Binds               [strict(4) hybrid]
                   | `ForImp SrcLoc CallConv Safety String Name Type
                   | `ForExp SrcLoc CallConv String Name Type
@@ -414,7 +414,7 @@ data SrcLoc = SrcLoc
          = Match SrcLoc Name [Pat] (Maybe Type) Rhs {-where-} Binds
 */
 
-    syntax Match ::= `Match SrcLoc Name HsList HsMaybe Rhs Binds
+    syntax Match ::= `Match SrcLoc Name HsList HsMaybe Rhs Binds  [strict(5 6) hybrid]
 
 /*
     -- | A single constructor declaration within a data type declaration,
