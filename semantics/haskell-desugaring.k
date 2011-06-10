@@ -109,4 +109,49 @@ kmod HASKELL-DESUGARING is
     macro EnumFromTo E1 E3 = App (App (Var (UnQual (Ident "enumFromTo"))) E1) E3
     macro EnumFromThenTo E1 E2 E3 = App (App (App (Var (UnQual (Ident "enumFromThenTo"))) E1) E2) E3
 
+    /*
+    List comprehensions satisfy these identities, which may be used as a
+    translation into the kernel:
+    [ e | True ]         = [e]
+    [ e | q ]            = [ e | q, True ]
+    [ e | b, Q ]         = if b then [ e | Q ] else []
+    [ e | p <- l, Q ]    = let ok p = [ e | Q ]
+                               ok _ = []
+                           in concatMap ok l
+    [ e | let decls, Q ] = let decls in [ e | Q ]
+    where e ranges over expressions, p over patterns, l over list-valued
+    expressions, b over boolean expressions, decls over declaration lists, q
+    over qualifiers, and Q over sequences of qualifiers. ok is a fresh
+    variable. The function concatMap, and boolean value True, are defined in
+    the Prelude.
+    */
+
+    macro ListComp E ((:) (QualStmt (Qualifier (Con (UnQual (Ident "True"))))) []) = ListExp ((:) E [])
+
+    rule ListComp E ((:) Q:QualStmt []) => ListComp E ((:) Q:QualStmt ((:) (QualStmt (Qualifier (Con (UnQual (Ident "True"))))) []))
+        if Q:QualStmt =/=Bool QualStmt (Qualifier (Con (UnQual (Ident "True"))))
+
+    rule ListComp E ((:) (QualStmt (Qualifier E1)) Qs:HsList) => If E1 (ListComp E Qs:HsList) (ListExp [])
+        if Qs:HsList =/=Bool []
+
+    rule <k>
+             ListComp E ((:) (QualStmt (Generator _ P:Pat E1)) Qs:HsList) =>
+                 Let (BDecls
+                     ((:) (FunBind
+                         ((:) (Match NoLoc (Ident FreshId) ((:) P:Pat []) Nothing
+                           (UnGuardedRhs (ListComp E Qs:HsList)) (BDecls []))
+                         ((:) (Match NoLoc (Ident FreshId) ((:) PWildCard []) Nothing
+                           (UnGuardedRhs (ListExp [])) (BDecls []))
+                         [])))
+                     []))
+                 (App (App (Var (UnQual (Ident "concatMap"))) (Var (UnQual (Ident FreshId)))) E1)
+         <_/k>
+         <fresh> N => N +Int 1 </fresh>
+         if Qs:HsList =/=Bool []
+         where FreshId = ("@ok" +String Int2String(N))
+
+
+    rule ListComp E ((:) (QualStmt (LetStmt Bs:Binds)) Qs:HsList) => Let Bs:Binds (ListComp E Qs:HsList)
+        if Qs:HsList =/=Bool []
+
 endkm
