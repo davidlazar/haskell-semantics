@@ -66,6 +66,7 @@ kmod HASKELL-SYNTAX is
                | GuardedAlt
 
     syntax KResult ::= QName
+                     | Name
                      | SrcLoc
                      | Type
                      | Pat
