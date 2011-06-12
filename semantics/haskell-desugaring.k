@@ -154,4 +154,45 @@ kmod HASKELL-DESUGARING is
     rule ListComp E ((:) (QualStmt (LetStmt Bs:Binds)) Qs:HsList) => Let Bs:Binds (ListComp E Qs:HsList)
         if Qs:HsList =/=Bool []
 
+    /*
+    Do expressions satisfy these identities, which may be used as a
+    translation into the kernel, after eliminating empty stmts:
+    do {e}                = e
+    do {e; stmts}         = e >> do {stmts}
+    do {p <- e; stmts}    = let ok p = do {stmts}
+                                ok _ = fail "..."
+                            in e >>= ok
+    do {let decls; stmts} = let decls in do {stmts}
+    The ellipsis "..." stands for a compiler-generated error message, passed
+    to fail, preferably giving some indication of the location of the
+    pattern-match failure; the functions >>, >>=, and fail are operations in
+    the class Monad, as defined in the Prelude; and ok is a fresh identifier.
+    */
+
+    macro Do ((:) (Qualifier E) []) = E
+
+    rule Do ((:) (Qualifier E) Ss:HsList) => InfixApp E (QVarOp (UnQual (Symbol ">>"))) (Do Ss:HsList)
+        if Ss:HsList =/=Bool []
+
+    rule <k>
+            Do ((:) (Generator _ P:Pat E) Ss) =>
+                Let (BDecls
+                    ((:) (FunBind
+                        ((:) (Match NoLoc (Ident FreshId) ((:) P:Pat []) Nothing
+                          (UnGuardedRhs (Do Ss)) (BDecls []))
+                        ((:) (Match NoLoc (Ident FreshId) ((:) PWildCard []) Nothing
+                          (UnGuardedRhs (App (Var (UnQual (Ident "fail")))
+                            (Lit (StringLit "pattern match failure")))) (BDecls []))
+                        [])))
+                    []))
+                (InfixApp E (QVarOp (UnQual (Symbol ">>="))) (Var (UnQual (Ident FreshId))))
+         <_/k>
+         <fresh> N => N +Int 1 </fresh>
+         if Ss:HsList =/=Bool []
+         where FreshId = ("@ok" +String Int2String(N))
+
+
+    rule Do ((:) (LetStmt Bs) Ss:HsList) => Let Bs (Do Ss:HsList)
+        if Ss:HsList =/=Bool []
+
 endkm
