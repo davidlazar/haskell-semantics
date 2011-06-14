@@ -1053,7 +1053,7 @@ data SrcLoc = SrcLoc
 */
 
     syntax GuardedAlts ::= `UnGuardedAlt Exp    [strict hybrid]
-                         | `GuardedAlts HsList  // TODO
+                         | `GuardedAlts HsList  [strict hybrid]
 
 /*
     -- | A guarded case alternative @|@ /stmts/ @->@ /exp/.
@@ -1061,7 +1061,7 @@ data SrcLoc = SrcLoc
         = GuardedAlt SrcLoc [Stmt] Exp
 */
 
-    syntax GuardedAlt ::= `GuardedAlt SrcLoc HsList Exp
+    syntax GuardedAlt ::= `GuardedAlt SrcLoc HsList Exp [strict(2 3) hybrid]
 
 --- End of syntax, rest of this file is the remainder of Language.Haskell.Exts.Syntax
 
