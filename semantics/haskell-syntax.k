@@ -75,6 +75,8 @@ kmod HASKELL-SYNTAX is
                      | ExportSpec
                      | WarningText
                      | ImportDecl
+                     | Assoc
+                     | Op
 
 
 // Imported from Language.Haskell.Exts.SrcLoc:
