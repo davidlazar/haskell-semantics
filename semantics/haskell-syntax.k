@@ -350,7 +350,7 @@ data SrcLoc = SrcLoc
                   | `ClassDecl SrcLoc Context Name HsList HsList HsList
                   | `InstDecl SrcLoc Context QName HsList HsList
                   | `DerivDecl SrcLoc Context QName HsList
-                  | `InfixDecl SrcLoc Assoc Int HsList
+                  | `InfixDecl SrcLoc Assoc Int HsList                  [hybrid]
                   | `DefaultDecl SrcLoc HsList
                   | `SpliceDecl SrcLoc Exp
                   | `TypeSig SrcLoc HsList Type
