@@ -191,7 +191,6 @@ kmod HASKELL-DESUGARING is
          if Ss:HsList =/=Bool []
          where FreshId = ("@ok" +String Int2String(N))
 
-
     rule Do ((:) (LetStmt Bs) Ss:HsList) => Let Bs (Do Ss:HsList)
         if Ss:HsList =/=Bool []
 
