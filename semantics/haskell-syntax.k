@@ -508,7 +508,7 @@ data SrcLoc = SrcLoc
 */
 
     syntax Rhs ::= `UnGuardedRhs Exp    [strict hybrid]
-                 | `GuardedRhss HsList
+                 | `GuardedRhss HsList  [strict hybrid]
 
 /*
     -- | A guarded right hand side @|@ /stmts/ @=@ /exp/.
@@ -518,7 +518,7 @@ data SrcLoc = SrcLoc
          = GuardedRhs SrcLoc [Stmt] Exp
 */
 
-    syntax GuardedRhs ::= `GuardedRhs SrcLoc HsList Exp
+    syntax GuardedRhs ::= `GuardedRhs SrcLoc HsList Exp  [strict(2 3) hybrid]
 
 /*
     -- | A type qualified with a context.
