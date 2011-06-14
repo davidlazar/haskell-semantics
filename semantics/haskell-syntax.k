@@ -998,9 +998,9 @@ data SrcLoc = SrcLoc
         | RecStmt [Stmt]    -- ^ a recursive binding group for arrows
 */
 
-    syntax Stmt ::= `Generator SrcLoc Pat Exp
-                  | `Qualifier Exp
-                  | `LetStmt Binds
+    syntax Stmt ::= `Generator SrcLoc Pat Exp  [strict(3) hybrid]
+                  | `Qualifier Exp             [strict hybrid]
+                  | `LetStmt Binds             [strict hybrid]
                   | `RecStmt HsList
 
 /*
