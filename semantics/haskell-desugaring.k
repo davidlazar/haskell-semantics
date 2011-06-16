@@ -1,5 +1,6 @@
 kmod HASKELL-DESUGARING is
     including HASKELL-SYNTAX
+    including HASKELL-DESUGARING-HELPERS
     including K
     including PL-CONVERSION
 
@@ -24,9 +25,6 @@ kmod HASKELL-DESUGARING is
 
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
-
-    syntax SrcLoc ::= `NoLoc
-    macro NoLoc = SrcLoc "<unknown.hs>" 0 0
 
     /*
     The integer literal i is equivalent to fromInteger i, where fromInteger is
