@@ -192,4 +192,30 @@ kmod HASKELL-DESUGARING is
     rule Do ((:) (LetStmt Bs) Ss:HsList) => Let Bs (Do Ss:HsList)
         if Ss:HsList =/=Bool []
 
+
+
+    /*
+    The general binding form for functions is semantically equivalent to the
+    equation (i.e. simple pattern binding):
+
+    x = \ x1 ... xk -> case (x1, ..., xk) of
+        (p11, ..., p1k) match1
+        ...
+        (pn1, ..., pnk) matchn
+
+    where the xi are new identifiers.
+    */
+
+    rule <k>
+            FunBind Ms:HsList => PatBind NoLoc (PVar (Ident name)) Nothing
+              (UnGuardedRhs
+                (Lambda NoLoc (freshPVarList "x" N arity)
+                  (Case (Tuple (freshVarList "x" N arity)) (trMatchesToAlts Ms:HsList))))
+              (BDecls [])
+         <_/k>
+         <fresh> N => N +Int arity +Int 1 </fresh>
+         where arity = getArity Ms:HsList
+           and name  = getName  Ms:HsList
+
+
 endkm
