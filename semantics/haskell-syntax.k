@@ -357,7 +357,7 @@ data SrcLoc = SrcLoc
                   | `SpliceDecl SrcLoc Exp
                   | `TypeSig SrcLoc HsList Type                         [hybrid]
                   | `FunBind HsList
-                  | `PatBind SrcLoc Pat HsMaybe Rhs Binds               [strict(4) hybrid]
+                  | `PatBind SrcLoc Pat HsMaybe Rhs Binds               [strict(4 5)]
                   | `ForImp SrcLoc CallConv Safety String Name Type
                   | `ForExp SrcLoc CallConv String Name Type
                   | `RulePragmaDecl SrcLoc HsList

@@ -217,5 +217,30 @@ kmod HASKELL-DESUGARING is
          where arity = getArity Ms:HsList
            and name  = getName  Ms:HsList
 
+    /*
+    The pattern binding
+
+    p | g1 = e1
+      | g2 = e2
+      ...
+      | gm = em
+      where { decls }
+
+    is semantically equivalent to this simple pattern binding:
+
+    p = let decls in
+            if g1 then e1 else
+            if g2 then e2 else
+            ...
+            if gm then em else error "Unmatched pattern"
+
+    */
+    rule <k>
+            PatBind Loc:SrcLoc Pat:Pat Type:HsMaybe Rhs:Rhs Binds:Binds =>
+              desugared(PatBind Loc Pat Type
+                (UnGuardedRhs (bindIfNonEmpty Binds (trRhsToExp Rhs)))
+                (BDecls []))
+         <_/k>
+
 
 endkm

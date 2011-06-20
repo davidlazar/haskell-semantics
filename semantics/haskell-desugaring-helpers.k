@@ -5,12 +5,14 @@ kmod HASKELL-DESUGARING-HELPERS is
 
 
     kvar Exp     : Exp
+    kvar BExp    : Exp
     kvar Rhs     : Rhs
     kvar Binds   : Binds
     kvar Count   : Int
     kvar Fresh   : Int
     kvar Name    : String
     kvar Prefix  : String
+    kvar Decls   : HsList
     kvar GRhss   : HsList
     kvar HsList  : HsList
     kvar Matches : HsList
@@ -20,6 +22,25 @@ kmod HASKELL-DESUGARING-HELPERS is
 
     syntax SrcLoc ::= `NoLoc
     macro NoLoc = SrcLoc "<unknown.hs>" 0 0
+
+
+    syntax Exp ::= bindIfNonEmpty Binds Exp
+    rule bindIfNonEmpty (BDecls []) Exp => Exp
+        [structural]
+    rule bindIfNonEmpty (BDecls Decls) Exp => Let (BDecls Decls) Exp
+        if Decls =/=Bool []
+        [structural]
+
+
+    syntax Exp ::= trRhsToExp Rhs
+    rule trRhsToExp (UnGuardedRhs Exp) => Exp
+    rule trRhsToExp (GuardedRhss GRhss) => trGRhssToExp GRhss
+
+
+    syntax Exp ::= trGRhssToExp HsList
+    rule trGRhssToExp [] => App (Var (UnQual (Ident "error"))) (Lit (StringLit "Unmatched pattern"))
+    rule trGRhssToExp ((:) (GuardedRhs _ ((:) (Qualifier BExp) []) Exp) GRhss) =>
+        If BExp Exp (trGRhssToExp GRhss)
 
 
     syntax HsList ::= trMatchesToAlts HsList
