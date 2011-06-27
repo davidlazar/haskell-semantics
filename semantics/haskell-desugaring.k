@@ -42,13 +42,13 @@ kmod HASKELL-DESUGARING is
 
     */
 
-    macro NegApp E = App (Var (UnQual (Ident "negate"))) E
+    rule NegApp E => App (Var (UnQual (Ident "negate"))) E
 
-    macro InfixApp E1 Q:QOp E2 = App (App fromInfix(Q:QOp) E1) E2
+    rule InfixApp E1 Q:QOp E2 => App (App fromInfix(Q:QOp) E1) E2
 
     syntax Exp ::= fromInfix QOp
-    macro fromInfix(QVarOp QN:QName) = Var QN:QName
-    macro fromInfix(QConOp QN:QName) = Con QN:QName
+    rule fromInfix(QVarOp QN:QName) => Var QN:QName [structural]
+    rule fromInfix(QConOp QN:QName) => Con QN:QName [structural]
 
     /*
     The following identities hold:
@@ -86,7 +86,7 @@ kmod HASKELL-DESUGARING is
     same type, which is also the type of the entire conditional expression.
     */
 
-    macro If E E1 E2 = Case E ((:) Alt NoLoc (PApp (UnQual (Ident "True" )) []) (UnGuardedAlt E1) (BDecls [])
+    rule If E E1 E2 => Case E ((:) Alt NoLoc (PApp (UnQual (Ident "True" )) []) (UnGuardedAlt E1) (BDecls [])
                                (:) Alt NoLoc (PApp (UnQual (Ident "False")) []) (UnGuardedAlt E2) (BDecls [])
                                [])
 
@@ -95,7 +95,7 @@ kmod HASKELL-DESUGARING is
     (e) is equivalent to e.
     */
 
-    macro Paren E = E
+    rule Paren E => E
 
 
     /*
@@ -110,10 +110,10 @@ kmod HASKELL-DESUGARING is
     methods in the class Enum as defined in the Prelude (see Figure 6.1).
     */
 
-    macro EnumFrom E1 = App (Var (UnQual (Ident "enumFrom"))) E1
-    macro EnumFromThen E1 E2 = App (App (Var (UnQual (Ident "enumFromThen"))) E1) E2
-    macro EnumFromTo E1 E3 = App (App (Var (UnQual (Ident "enumFromTo"))) E1) E3
-    macro EnumFromThenTo E1 E2 E3 = App (App (App (Var (UnQual (Ident "enumFromThenTo"))) E1) E2) E3
+    rule EnumFrom E1 => App (Var (UnQual (Ident "enumFrom"))) E1
+    rule EnumFromThen E1 E2 => App (App (Var (UnQual (Ident "enumFromThen"))) E1) E2
+    rule EnumFromTo E1 E3 => App (App (Var (UnQual (Ident "enumFromTo"))) E1) E3
+    rule EnumFromThenTo E1 E2 E3 => App (App (App (Var (UnQual (Ident "enumFromThenTo"))) E1) E2) E3
 
     /*
     List comprehensions satisfy these identities, which may be used as a
@@ -134,7 +134,7 @@ kmod HASKELL-DESUGARING is
     the Prelude.
     */
 
-    macro ListComp E ((:) (QualStmt (Qualifier (Con (UnQual (Ident "True"))))) []) = ListExp ((:) E [])
+    rule ListComp E ((:) (QualStmt (Qualifier (Con (UnQual (Ident "True"))))) []) => ListExp ((:) E [])
 
     rule ListComp E ((:) Q:QualStmt []) => ListComp E ((:) Q:QualStmt ((:) (QualStmt (Qualifier (Con (UnQual (Ident "True"))))) []))
         if Q:QualStmt =/=Bool QualStmt (Qualifier (Con (UnQual (Ident "True"))))
@@ -179,7 +179,7 @@ kmod HASKELL-DESUGARING is
     the class Monad, as defined in the Prelude; and ok is a fresh identifier.
     */
 
-    macro Do ((:) (Qualifier E) []) = E
+    rule Do ((:) (Qualifier E) []) => E
 
     rule Do ((:) (Qualifier E) Ss:HsList) => InfixApp E (QVarOp (UnQual (Symbol ">>"))) (Do Ss:HsList)
         if Ss:HsList =/=Bool []
