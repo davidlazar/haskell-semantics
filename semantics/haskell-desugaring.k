@@ -29,6 +29,7 @@ kmod HASKELL-DESUGARING is
     kvar Binds   : Binds
     kvar Matches : HsList
     kvar Stmts   : HsList
+    kvar Pat     : Pat
 
     /*
     The integer literal i is equivalent to fromInteger i, where fromInteger is
@@ -147,10 +148,10 @@ kmod HASKELL-DESUGARING is
         if Qs:HsList =/=Bool []
 
     rule <k>
-             ListComp E ((:) (QualStmt (Generator _ P:Pat E1)) Qs:HsList) =>
+             ListComp E ((:) (QualStmt (Generator _ Pat E1)) Qs:HsList) =>
                  Let (BDecls
                      ((:) (FunBind
-                         ((:) (Match NoLoc (Ident FreshId) ((:) P:Pat []) Nothing
+                         ((:) (Match NoLoc (Ident FreshId) ((:) Pat []) Nothing
                            (UnGuardedRhs (ListComp E Qs:HsList)) (BDecls []))
                          ((:) (Match NoLoc (Ident FreshId) ((:) PWildCard []) Nothing
                            (UnGuardedRhs (ListExp [])) (BDecls []))
@@ -189,10 +190,10 @@ kmod HASKELL-DESUGARING is
         if Stmts =/=Bool []
 
     rule <k>
-            Do ((:) (Generator _ P:Pat E) Stmts) =>
+            Do ((:) (Generator _ Pat E) Stmts) =>
                 Let (BDecls
                     ((:) (FunBind
-                        ((:) (Match NoLoc (Ident FreshId) ((:) P:Pat []) Nothing
+                        ((:) (Match NoLoc (Ident FreshId) ((:) Pat []) Nothing
                           (UnGuardedRhs (Do Stmts)) (BDecls []))
                         ((:) (Match NoLoc (Ident FreshId) ((:) PWildCard []) Nothing
                           (UnGuardedRhs (App (Var (UnQual (Ident "fail")))
@@ -252,7 +253,7 @@ kmod HASKELL-DESUGARING is
 
     */
     rule <k>
-            PatBind Loc:SrcLoc Pat:Pat Type:HsMaybe Rhs:Rhs Binds =>
+            PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs:Rhs Binds =>
               desugared(PatBind Loc Pat Type
                 (UnGuardedRhs (bindIfNonEmpty Binds (trRhsToExp Rhs)))
                 (BDecls []))
