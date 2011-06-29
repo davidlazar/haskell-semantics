@@ -28,6 +28,7 @@ kmod HASKELL-DESUGARING is
 
     kvar Binds   : Binds
     kvar Matches : HsList
+    kvar QualStmts : HsList
     kvar Stmts   : HsList
     kvar Pat     : Pat
 
@@ -144,15 +145,15 @@ kmod HASKELL-DESUGARING is
     rule ListComp E ((:) Q:QualStmt []) => ListComp E ((:) Q:QualStmt ((:) (QualStmt (Qualifier (Con (UnQual (Ident "True"))))) []))
         if Q:QualStmt =/=Bool QualStmt (Qualifier (Con (UnQual (Ident "True"))))
 
-    rule ListComp E ((:) (QualStmt (Qualifier E1)) Qs:HsList) => If E1 (ListComp E Qs:HsList) (ListExp [])
-        if Qs:HsList =/=Bool []
+    rule ListComp E ((:) (QualStmt (Qualifier E1)) QualStmts) => If E1 (ListComp E QualStmts) (ListExp [])
+        if QualStmts =/=Bool []
 
     rule <k>
-             ListComp E ((:) (QualStmt (Generator _ Pat E1)) Qs:HsList) =>
+             ListComp E ((:) (QualStmt (Generator _ Pat E1)) QualStmts) =>
                  Let (BDecls
                      ((:) (FunBind
                          ((:) (Match NoLoc (Ident FreshId) ((:) Pat []) Nothing
-                           (UnGuardedRhs (ListComp E Qs:HsList)) (BDecls []))
+                           (UnGuardedRhs (ListComp E QualStmts)) (BDecls []))
                          ((:) (Match NoLoc (Ident FreshId) ((:) PWildCard []) Nothing
                            (UnGuardedRhs (ListExp [])) (BDecls []))
                          [])))
@@ -160,12 +161,12 @@ kmod HASKELL-DESUGARING is
                  (App (App (Var (UnQual (Ident "concatMap"))) (Var (UnQual (Ident FreshId)))) E1)
          <_/k>
          <fresh> N => N +Int 1 </fresh>
-         if Qs:HsList =/=Bool []
+         if QualStmts =/=Bool []
          where FreshId = ("@ok" +String Int2String(N))
 
 
-    rule ListComp E ((:) (QualStmt (LetStmt Binds)) Qs:HsList) => Let Binds (ListComp E Qs:HsList)
-        if Qs:HsList =/=Bool []
+    rule ListComp E ((:) (QualStmt (LetStmt Binds)) QualStmts) => Let Binds (ListComp E QualStmts)
+        if QualStmts =/=Bool []
 
     /*
     Do expressions satisfy these identities, which may be used as a
