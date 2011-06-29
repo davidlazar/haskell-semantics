@@ -26,6 +26,7 @@ kmod HASKELL-DESUGARING is
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
 
+    kvar Binds   : Binds
     kvar Matches : HsList
     kvar Stmts   : HsList
 
@@ -162,7 +163,7 @@ kmod HASKELL-DESUGARING is
          where FreshId = ("@ok" +String Int2String(N))
 
 
-    rule ListComp E ((:) (QualStmt (LetStmt Bs:Binds)) Qs:HsList) => Let Bs:Binds (ListComp E Qs:HsList)
+    rule ListComp E ((:) (QualStmt (LetStmt Binds)) Qs:HsList) => Let Binds (ListComp E Qs:HsList)
         if Qs:HsList =/=Bool []
 
     /*
@@ -204,7 +205,7 @@ kmod HASKELL-DESUGARING is
          if Stmts =/=Bool []
          where FreshId = ("@ok" +String Int2String(N))
 
-    rule Do ((:) (LetStmt Bs) Stmts) => Let Bs (Do Stmts)
+    rule Do ((:) (LetStmt Binds) Stmts) => Let Binds (Do Stmts)
         if Stmts =/=Bool []
 
 
@@ -251,7 +252,7 @@ kmod HASKELL-DESUGARING is
 
     */
     rule <k>
-            PatBind Loc:SrcLoc Pat:Pat Type:HsMaybe Rhs:Rhs Binds:Binds =>
+            PatBind Loc:SrcLoc Pat:Pat Type:HsMaybe Rhs:Rhs Binds =>
               desugared(PatBind Loc Pat Type
                 (UnGuardedRhs (bindIfNonEmpty Binds (trRhsToExp Rhs)))
                 (BDecls []))
