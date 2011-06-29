@@ -26,6 +26,8 @@ kmod HASKELL-DESUGARING is
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
 
+    kvar Matches : HsList
+
     /*
     The integer literal i is equivalent to fromInteger i, where fromInteger is
     a method in class Num (see Section 6.4.1).
@@ -219,15 +221,15 @@ kmod HASKELL-DESUGARING is
     */
 
     rule <k>
-            FunBind Ms:HsList => PatBind NoLoc (PVar (Ident name)) Nothing
+            FunBind Matches => PatBind NoLoc (PVar (Ident name)) Nothing
               (UnGuardedRhs
                 (Lambda NoLoc (freshPVarList "x" N arity)
-                  (Case (Tuple (freshVarList "x" N arity)) (trMatchesToAlts Ms:HsList))))
+                  (Case (Tuple (freshVarList "x" N arity)) (trMatchesToAlts Matches))))
               (BDecls [])
          <_/k>
          <fresh> N => N +Int arity +Int 1 </fresh>
-         where arity = getArity Ms:HsList
-           and name  = getName  Ms:HsList
+         where arity = getArity Matches
+           and name  = getName  Matches
 
     /*
     The pattern binding
