@@ -232,8 +232,8 @@ kmod HASKELL-DESUGARING is
               (BDecls [])
          <_/k>
          <fresh> N => N +Int arity +Int 1 </fresh>
-         where arity = getArity Matches
-           and name  = getName  Matches
+         where arity = getFunctionArity Matches
+           and name  = getFunctionName  Matches
 
     /*
     The pattern binding

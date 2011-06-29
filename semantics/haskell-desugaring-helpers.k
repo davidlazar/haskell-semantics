@@ -68,13 +68,13 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
 
 
-    syntax Int ::= getArity HsList
-    rule getArity ((:) (Match _ _ Pats _ _ _) _) => length Pats
+    syntax Int ::= getFunctionArity HsList
+    rule getFunctionArity ((:) (Match _ _ Pats _ _ _) _) => length Pats
         [structural]
 
 
-    syntax String ::= getName HsList
-    rule getName ((:) (Match _ (Ident Name) _ _ _ _) _) => Name
+    syntax String ::= getFunctionName HsList
+    rule getFunctionName ((:) (Match _ (Ident Name) _ _ _ _) _) => Name
         [structural]
 
 
