@@ -27,6 +27,7 @@ kmod HASKELL-DESUGARING is
     kvar I N : Int
 
     kvar Matches : HsList
+    kvar Stmts   : HsList
 
     /*
     The integer literal i is equivalent to fromInteger i, where fromInteger is
@@ -183,15 +184,15 @@ kmod HASKELL-DESUGARING is
 
     rule Do ((:) (Qualifier E) []) => E
 
-    rule Do ((:) (Qualifier E) Ss:HsList) => InfixApp E (QVarOp (UnQual (Symbol ">>"))) (Do Ss:HsList)
-        if Ss:HsList =/=Bool []
+    rule Do ((:) (Qualifier E) Stmts) => InfixApp E (QVarOp (UnQual (Symbol ">>"))) (Do Stmts)
+        if Stmts =/=Bool []
 
     rule <k>
-            Do ((:) (Generator _ P:Pat E) Ss) =>
+            Do ((:) (Generator _ P:Pat E) Stmts) =>
                 Let (BDecls
                     ((:) (FunBind
                         ((:) (Match NoLoc (Ident FreshId) ((:) P:Pat []) Nothing
-                          (UnGuardedRhs (Do Ss)) (BDecls []))
+                          (UnGuardedRhs (Do Stmts)) (BDecls []))
                         ((:) (Match NoLoc (Ident FreshId) ((:) PWildCard []) Nothing
                           (UnGuardedRhs (App (Var (UnQual (Ident "fail")))
                             (Lit (StringLit "pattern match failure")))) (BDecls []))
@@ -200,11 +201,11 @@ kmod HASKELL-DESUGARING is
                 (InfixApp E (QVarOp (UnQual (Symbol ">>="))) (Var (UnQual (Ident FreshId))))
          <_/k>
          <fresh> N => N +Int 1 </fresh>
-         if Ss:HsList =/=Bool []
+         if Stmts =/=Bool []
          where FreshId = ("@ok" +String Int2String(N))
 
-    rule Do ((:) (LetStmt Bs) Ss:HsList) => Let Bs (Do Ss:HsList)
-        if Ss:HsList =/=Bool []
+    rule Do ((:) (LetStmt Bs) Stmts) => Let Bs (Do Stmts)
+        if Stmts =/=Bool []
 
 
 
