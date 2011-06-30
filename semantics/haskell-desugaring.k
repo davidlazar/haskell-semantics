@@ -61,6 +61,7 @@ kmod HASKELL-DESUGARING is
     rule fromInfix(QVarOp QN:QName) => Var QN:QName [structural]
     rule fromInfix(QConOp QN:QName) => Con QN:QName [structural]
 
+
     /*
     The following identities hold:
 
@@ -125,6 +126,7 @@ kmod HASKELL-DESUGARING is
     rule EnumFromThen E1 E2 => App (App (Var (UnQual (Ident "enumFromThen"))) E1) E2
     rule EnumFromTo E1 E3 => App (App (Var (UnQual (Ident "enumFromTo"))) E1) E3
     rule EnumFromThenTo E1 E2 E3 => App (App (App (Var (UnQual (Ident "enumFromThenTo"))) E1) E2) E3
+
 
     /*
     List comprehensions satisfy these identities, which may be used as a
@@ -284,6 +286,7 @@ kmod HASKELL-DESUGARING is
             if gm then em else error "Unmatched pattern"
 
     */
+
     rule <k>
             PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs Binds =>
               desugared(PatBind Loc Pat Type
