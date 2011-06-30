@@ -294,12 +294,16 @@ kmod HASKELL-DESUGARING is
 
     syntax Exp ::= trRhsToExp Rhs
     rule trRhsToExp (UnGuardedRhs Exp) => Exp
+        [structural]
     rule trRhsToExp (GuardedRhss GRhss) => trGRhssToExp GRhss
+        [structural]
 
 
     syntax Exp ::= trGRhssToExp HsList
     rule trGRhssToExp [] => App (Var (UnQual (Ident "error"))) (Lit (StringLit "Unmatched pattern"))
+        [structural]
     rule trGRhssToExp ((:) (GuardedRhs _ ((:) (Qualifier BExp) []) Exp) GRhss) =>
         If BExp Exp (trGRhssToExp GRhss)
+        [structural]
 
 endkm
