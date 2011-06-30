@@ -56,6 +56,13 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
 
 
+    syntax Bool ::= nonempty HsList
+    rule nonempty [] => false
+        [structural]
+    rule nonempty ((:) _ _) => true
+        [structural]
+
+
     syntax Int ::= length HsList
     rule length [] => 0
         [structural]

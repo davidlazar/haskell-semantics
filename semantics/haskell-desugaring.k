@@ -153,7 +153,7 @@ kmod HASKELL-DESUGARING is
         if Q:QualStmt =/=Bool QualStmt (Qualifier (Con (UnQual (Ident "True"))))
 
     rule ListComp E ((:) (QualStmt (Qualifier E1)) QualStmts) => If E1 (ListComp E QualStmts) (ListExp [])
-        if QualStmts =/=Bool []
+        if nonempty QualStmts
 
     rule <k>
              ListComp E ((:) (QualStmt (Generator _ Pat E1)) QualStmts) =>
@@ -168,12 +168,12 @@ kmod HASKELL-DESUGARING is
                  (App (App (Var (UnQual (Ident "concatMap"))) (Var (UnQual (Ident FreshId)))) E1)
          <_/k>
          <fresh> N => N +Int 1 </fresh>
-         if QualStmts =/=Bool []
+         if nonempty QualStmts
          where FreshId = ("@ok" +String Int2String(N))
 
 
     rule ListComp E ((:) (QualStmt (LetStmt Binds)) QualStmts) => Let Binds (ListComp E QualStmts)
-        if QualStmts =/=Bool []
+        if nonempty QualStmts
 
     /*
     Do expressions satisfy these identities, which may be used as a
@@ -195,7 +195,7 @@ kmod HASKELL-DESUGARING is
     rule Do ((:) (Qualifier E) []) => E
 
     rule Do ((:) (Qualifier E) Stmts) => InfixApp E (QVarOp (UnQual (Symbol ">>"))) (Do Stmts)
-        if Stmts =/=Bool []
+        if nonempty Stmts
 
     rule <k>
             Do ((:) (Generator _ Pat E) Stmts) =>
@@ -211,11 +211,11 @@ kmod HASKELL-DESUGARING is
                 (InfixApp E (QVarOp (UnQual (Symbol ">>="))) (Var (UnQual (Ident FreshId))))
          <_/k>
          <fresh> N => N +Int 1 </fresh>
-         if Stmts =/=Bool []
+         if nonempty Stmts
          where FreshId = ("@ok" +String Int2String(N))
 
     rule Do ((:) (LetStmt Binds) Stmts) => Let Binds (Do Stmts)
-        if Stmts =/=Bool []
+        if nonempty Stmts
 
 
 
