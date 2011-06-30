@@ -26,8 +26,13 @@ kmod HASKELL-DESUGARING is
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
 
+    kvar Exp     : Exp
+    kvar BExp    : Exp
+    kvar Rhs     : Rhs
     kvar Binds   : Binds
+    kvar GRhss   : HsList
     kvar Matches : HsList
+    kvar Pats    : HsList
     kvar QualStmts : HsList
     kvar Stmts   : HsList
     kvar Pat     : Pat
@@ -235,6 +240,32 @@ kmod HASKELL-DESUGARING is
          where arity = getFunctionArity Matches
            and name  = getFunctionName  Matches
 
+
+    syntax HsList ::= trMatchesToAlts HsList
+    rule trMatchesToAlts [] => []
+        [structural]
+    rule trMatchesToAlts ((:) (Match _ _ Pats _ Rhs Binds) Matches) =>
+        (:) (Alt NoLoc (PTuple Pats) (trRhsToGuardedAlts Rhs) Binds)
+            (trMatchesToAlts Matches)
+        [structural]
+
+
+    syntax GuardedAlts ::= trRhsToGuardedAlts Rhs
+    rule trRhsToGuardedAlts (UnGuardedRhs Exp) => UnGuardedAlt Exp
+        [structural]
+    rule trRhsToGuardedAlts (GuardedRhss GRhss) =>
+        GuardedAlts (trGRhssToGAlts GRhss)
+        [structural]
+
+
+    syntax HsList ::= trGRhssToGAlts HsList
+    rule trGRhssToGAlts [] => []
+        [structural]
+    rule trGRhssToGAlts ((:) (GuardedRhs _ Stmts Exp) GRhss) =>
+        (:) (GuardedAlt NoLoc Stmts Exp) (trGRhssToGAlts GRhss)
+        [structural]
+
+
     /*
     The pattern binding
 
@@ -254,11 +285,21 @@ kmod HASKELL-DESUGARING is
 
     */
     rule <k>
-            PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs:Rhs Binds =>
+            PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs Binds =>
               desugared(PatBind Loc Pat Type
                 (UnGuardedRhs (bindIfNonEmpty Binds (trRhsToExp Rhs)))
                 (BDecls []))
          <_/k>
 
+
+    syntax Exp ::= trRhsToExp Rhs
+    rule trRhsToExp (UnGuardedRhs Exp) => Exp
+    rule trRhsToExp (GuardedRhss GRhss) => trGRhssToExp GRhss
+
+
+    syntax Exp ::= trGRhssToExp HsList
+    rule trGRhssToExp [] => App (Var (UnQual (Ident "error"))) (Lit (StringLit "Unmatched pattern"))
+    rule trGRhssToExp ((:) (GuardedRhs _ ((:) (Qualifier BExp) []) Exp) GRhss) =>
+        If BExp Exp (trGRhssToExp GRhss)
 
 endkm

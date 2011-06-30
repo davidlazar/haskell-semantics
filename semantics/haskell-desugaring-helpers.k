@@ -5,19 +5,13 @@ kmod HASKELL-DESUGARING-HELPERS is
 
 
     kvar Exp     : Exp
-    kvar BExp    : Exp
-    kvar Rhs     : Rhs
-    kvar Binds   : Binds
     kvar Count   : Int
     kvar Fresh   : Int
     kvar Name    : String
     kvar Prefix  : String
     kvar Decls   : HsList
-    kvar GRhss   : HsList
     kvar HsList  : HsList
-    kvar Matches : HsList
     kvar Pats    : HsList
-    kvar Stmts   : HsList
 
 
     syntax SrcLoc ::= `NoLoc
@@ -29,42 +23,6 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
     rule bindIfNonEmpty (BDecls Decls) Exp => Let (BDecls Decls) Exp
         if Decls =/=Bool []
-        [structural]
-
-
-    syntax Exp ::= trRhsToExp Rhs
-    rule trRhsToExp (UnGuardedRhs Exp) => Exp
-    rule trRhsToExp (GuardedRhss GRhss) => trGRhssToExp GRhss
-
-
-    syntax Exp ::= trGRhssToExp HsList
-    rule trGRhssToExp [] => App (Var (UnQual (Ident "error"))) (Lit (StringLit "Unmatched pattern"))
-    rule trGRhssToExp ((:) (GuardedRhs _ ((:) (Qualifier BExp) []) Exp) GRhss) =>
-        If BExp Exp (trGRhssToExp GRhss)
-
-
-    syntax HsList ::= trMatchesToAlts HsList
-    rule trMatchesToAlts [] => []
-        [structural]
-    rule trMatchesToAlts ((:) (Match _ _ Pats _ Rhs Binds) Matches) =>
-        (:) (Alt NoLoc (PTuple Pats) (trRhsToGuardedAlts Rhs) Binds)
-            (trMatchesToAlts Matches)
-        [structural]
-
-
-    syntax GuardedAlts ::= trRhsToGuardedAlts Rhs
-    rule trRhsToGuardedAlts (UnGuardedRhs Exp) => UnGuardedAlt Exp
-        [structural]
-    rule trRhsToGuardedAlts (GuardedRhss GRhss) =>
-        GuardedAlts (trGRhssToGAlts GRhss)
-        [structural]
-
-
-    syntax HsList ::= trGRhssToGAlts HsList
-    rule trGRhssToGAlts [] => []
-        [structural]
-    rule trGRhssToGAlts ((:) (GuardedRhs _ Stmts Exp) GRhss) =>
-        (:) (GuardedAlt NoLoc Stmts Exp) (trGRhssToGAlts GRhss)
         [structural]
 
 
