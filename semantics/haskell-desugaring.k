@@ -235,7 +235,7 @@ kmod HASKELL-DESUGARING is
             FunBind Matches => PatBind NoLoc (PVar (Ident name)) Nothing
               (UnGuardedRhs
                 (Lambda NoLoc (freshPVarList "x" N arity)
-                  (Case (Tuple (freshVarList "x" N arity)) (trMatchesToAlts Matches))))
+                  (Case (listToTuple (freshVarList "x" N arity)) (trMatchesToAlts Matches))))
               (BDecls [])
          <_/k>
          <fresh> N => N +Int arity +Int 1 </fresh>
@@ -247,7 +247,7 @@ kmod HASKELL-DESUGARING is
     rule trMatchesToAlts [] => []
         [structural]
     rule trMatchesToAlts ((:) (Match _ _ Pats _ Rhs Binds) Matches) =>
-        (:) (Alt NoLoc (PTuple Pats) (trRhsToGuardedAlts Rhs) Binds)
+        (:) (Alt NoLoc (listToPTuple Pats) (trRhsToGuardedAlts Rhs) Binds)
             (trMatchesToAlts Matches)
         [structural]
 

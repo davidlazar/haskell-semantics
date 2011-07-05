@@ -5,6 +5,7 @@ kmod HASKELL-DESUGARING-HELPERS is
 
 
     kvar Exp     : Exp
+    kvar Pat     : Pat
     kvar Count   : Int
     kvar Fresh   : Int
     kvar Name    : String
@@ -53,6 +54,22 @@ kmod HASKELL-DESUGARING-HELPERS is
         (:) (Var (UnQual (Ident ("@" ++ Prefix ++ Int2String(Fresh)))))
             (freshVarList Prefix (Fresh +Int 1) (Count -Int 1))
         if Count =/=Bool 0
+        [structural]
+
+
+    syntax Exp ::= listToTuple HsList
+    rule listToTuple ((:) Exp []) => Exp
+        [structural]
+    rule listToTuple ((:) Exp HsList) => Tuple ((:) Exp HsList)
+        if nonempty HsList
+        [structural]
+
+
+    syntax Pat ::= listToPTuple HsList
+    rule listToPTuple ((:) Pat []) => Pat
+        [structural]
+    rule listToPTuple ((:) Pat HsList) => PTuple ((:) Pat HsList)
+        if nonempty HsList
         [structural]
 
 
