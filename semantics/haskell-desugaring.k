@@ -3,6 +3,7 @@ kmod HASKELL-DESUGARING is
     including HASKELL-DESUGARING-HELPERS
     including K
     including PL-CONVERSION
+    including VISITOR
 
     configuration
         <T multiplicity="?">
@@ -19,7 +20,7 @@ kmod HASKELL-DESUGARING is
     syntax K ::= desugaredProgram List{K}
 
     rule <T_> <k> KR:KResult </k> <_/T> =>
-           <result> desugaredProgram(eraseKLabel(desugared, KR:KResult)) </result>
+           <result> desimplifyProgram(desugaredProgram(eraseKLabel(desugared, KR:KResult))) </result>
 
     rule desugaredProgram(K:K) => K:K
 
@@ -36,6 +37,13 @@ kmod HASKELL-DESUGARING is
     kvar QualStmts : HsList
     kvar Stmts   : HsList
     kvar Pat     : Pat
+
+    syntax K ::= desimplifyProgram K
+    macro desimplifyProgram K = visit K applying desimplify if label in SetItem(wklabel('SimplePatBind____))
+
+    syntax KLabel ::= desimplify
+
+    rule desimplify(SimplePatBind Loc Pat Type Exp) => PatBind Loc Pat Type (UnGuardedRhs Exp) (BDecls [])
 
     /*
     The integer literal i is equivalent to fromInteger i, where fromInteger is
@@ -287,11 +295,12 @@ kmod HASKELL-DESUGARING is
 
     */
 
+    syntax Decl ::= `SimplePatBind SrcLoc Pat HsMaybe Exp [hybrid]
+
     rule <k>
             PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs Binds =>
-              desugared(PatBind Loc Pat Type
-                (UnGuardedRhs (bindIfNonEmpty Binds (trRhsToExp Rhs)))
-                (BDecls []))
+              SimplePatBind Loc Pat Type
+                (bindIfNonEmpty Binds (trRhsToExp Rhs))
          <_/k>
 
 
