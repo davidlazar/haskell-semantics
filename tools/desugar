@@ -1,7 +1,20 @@
 #!/bin/bash
 
-maudeout=$(hs2k | simplemaude "[[ %s ]]" haskell-desugaring-test-compiled.maude < /dev/stdin)
+# Use a temp file to capture stderr (currently only used for statistics).
+errfile=$(mktemp)
 
+# Run the Haskell parser on stdin, pipe the lowered AST to Maude, and capture the output.
+maudeout=$(hs2k | simplemaude --stats "[[ %s ]]" haskell-desugaring-test-compiled.maude </dev/stdin 2>$errfile)
+
+# Read stderr from the temp file and remove it.
+maudeerr=$(<$errfile)
+rm -f $errfile
+
+# Print the stats with bright blue color.
+echo -e "\e[94m$maudeerr\e[0m"
+
+# If the '-d' debug flag is set, print the Maude output and stop. Otherwise,
+# continue with the pipeline.
 if [[ $1 == "-d" ]]; then
     echo $maudeout
 else
