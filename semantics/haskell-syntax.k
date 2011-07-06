@@ -718,7 +718,7 @@ data SrcLoc = SrcLoc
                  | `Lambda SrcLoc HsList Exp    [strict(3) hybrid]
                  | `Let Binds Exp               [strict]
                  | `If Exp Exp Exp
-                 | `Case Exp HsList             [strict hybrid]
+                 | `Case Exp HsList             [strict]
                  | `Do HsList
                  | `MDo HsList
                  | `Tuple HsList                [strict hybrid]

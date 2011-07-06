@@ -21,6 +21,7 @@ kmod HASKELL-DESUGARING is
     kvar BExp      : Exp
     kvar Rhs       : Rhs
     kvar Binds     : Binds
+    kvar Alts      : HsList
     kvar Decls     : HsList
     kvar GRhss     : HsList
     kvar Matches   : HsList
@@ -28,6 +29,7 @@ kmod HASKELL-DESUGARING is
     kvar QualStmts : HsList
     kvar Stmts     : HsList
     kvar Pat       : Pat
+    kvar Alt       : Alt
 
 
     configuration
@@ -402,6 +404,48 @@ kmod HASKELL-DESUGARING is
               Case (App (Var (UnQual (Ident "@fix"))) (Lambda NoLoc ((:) (PIrrPat Pat) []) Exp1))
                 ((:) (Alt NoLoc (PIrrPat Pat) (UnGuardedAlt Exp0) (BDecls [])) [])
          <_/k>
+
+
+    /*
+    Formal Semantics of Pattern Matching:
+    */
+
+    /*
+    (b)
+
+       case v of { p1 match1;  ... ; pn matchn }
+    =  case v of { p1 match1 ;
+                    _ -> ... case v of {
+                               pn matchn ;
+                                _ -> error "No match" }...}
+
+      where each matchi has the form:
+
+      | gi,1 -> ei,1 ; ... ; | gi,mi -> ei,mi where { declsi }
+
+    */
+
+    syntax Exp ::= `NestedCase Exp Alt Exp [strict]
+
+    rule <k>
+            Case Exp Alts => trAltsToNestedCase Exp Alts
+         <_/k>
+         if notBool (singlePVar Alts)
+
+
+    syntax Exp ::= trAltsToNestedCase Exp HsList
+    rule trAltsToNestedCase _ [] => App (Var (UnQual (Ident "error"))) (Lit (StringLit "No match"))
+        [structural]
+    rule trAltsToNestedCase Exp ((:) Alt Alts) => NestedCase Exp Alt (trAltsToNestedCase Exp Alts)
+        [structural]
+
+
+    syntax Bool ::= singlePVar HsList
+    rule singlePVar ((:) (Alt _ (PVar _) _ _) []) => true
+        [structural]
+    rule singlePVar ((:) (Alt _ Pat _ _) Alts) => false
+        if nonempty Alts orBool getKLabel Pat =/=Bool 'PVar_
+        [structural]
 
 
 endkm
