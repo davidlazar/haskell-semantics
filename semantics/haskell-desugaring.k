@@ -6,6 +6,10 @@ kmod HASKELL-DESUGARING is
     including VISITOR
 
 
+    /*
+    Eventually sorts will be inferred automatically. For now, declare sorts
+    explicitly in one big kvar block.
+    */
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
 
@@ -34,16 +38,28 @@ kmod HASKELL-DESUGARING is
         <result multiplicity="?"> .K </result>
 
 
+    /*
+    Helper to initialize the K cell with a program.
+    */
     syntax Bag ::= [[ K ]]
     macro [[ K ]] = <T_> <k> K </k> <_/T>
 
-    syntax KResultLabel ::= desugared
-    syntax K ::= desugaredProgram List{K}
+
+    /*
+    When the K cell is left with a KResult, move the result program to the
+    result cell and perform post-desugaring tasks.
+    */
 
     rule <T_> <k> KResult </k> <_/T> =>
            <result> desimplifyProgram(desugaredProgram(eraseKLabel(desugared, KResult))) </result>
 
+    syntax K ::= desugaredProgram List{K}
     rule desugaredProgram(K) => K
+
+
+    /*
+    Use the simplified K visitor pattern to remove intermediate syntax.
+    */
 
     syntax K ::= desimplifyProgram K
     macro desimplifyProgram K = visit K applying desimplify if label in SetItem(wklabel('SimplePatBind____))
@@ -51,6 +67,15 @@ kmod HASKELL-DESUGARING is
     syntax KLabel ::= desimplify
 
     rule desimplify(SimplePatBind Loc Pat Type Exp) => PatBind Loc Pat Type (UnGuardedRhs Exp) (BDecls [])
+
+
+    /*
+    Wrapper to explicitly mark a piece of syntax as desugared (used
+    sparingly).
+    */
+
+    syntax KResultLabel ::= desugared
+
 
     /*
     The integer literal i is equivalent to fromInteger i, where fromInteger is
