@@ -5,6 +5,25 @@ kmod HASKELL-DESUGARING is
     including PL-CONVERSION
     including VISITOR
 
+
+    kvar E E1 E2 E3 : Exp
+    kvar I N : Int
+
+    kvar Exp     : Exp
+    kvar Exp0    : Exp
+    kvar Exp1    : Exp
+    kvar BExp    : Exp
+    kvar Rhs     : Rhs
+    kvar Binds   : Binds
+    kvar Decls   : HsList
+    kvar GRhss   : HsList
+    kvar Matches : HsList
+    kvar Pats    : HsList
+    kvar QualStmts : HsList
+    kvar Stmts   : HsList
+    kvar Pat     : Pat
+
+
     configuration
         <T multiplicity="?">
             <k> .K </k>
@@ -23,23 +42,6 @@ kmod HASKELL-DESUGARING is
            <result> desimplifyProgram(desugaredProgram(eraseKLabel(desugared, KR:KResult))) </result>
 
     rule desugaredProgram(K:K) => K:K
-
-    kvar E E1 E2 E3 : Exp
-    kvar I N : Int
-
-    kvar Exp     : Exp
-    kvar Exp0    : Exp
-    kvar Exp1    : Exp
-    kvar BExp    : Exp
-    kvar Rhs     : Rhs
-    kvar Binds   : Binds
-    kvar Decls   : HsList
-    kvar GRhss   : HsList
-    kvar Matches : HsList
-    kvar Pats    : HsList
-    kvar QualStmts : HsList
-    kvar Stmts   : HsList
-    kvar Pat     : Pat
 
     syntax K ::= desimplifyProgram K
     macro desimplifyProgram K = visit K applying desimplify if label in SetItem(wklabel('SimplePatBind____))
