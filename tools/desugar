@@ -1,3 +1,10 @@
-#!/bin/sh
-# TODO: remove sed from the pipeline (currently used to trim leading whitespace)
-hs2k | simplemaude "[[ %s ]]" haskell-desugaring-test-compiled.maude | cellstoxml | xpath "//result/text()" | sed 's/^[ \t]*//' | k2hs
+#!/bin/bash
+
+maudeout=$(hs2k | simplemaude "[[ %s ]]" haskell-desugaring-test-compiled.maude < /dev/stdin)
+
+if [[ $1 == "-d" ]]; then
+    echo $maudeout
+else
+    # TODO: remove sed from the pipeline (currently used to trim leading whitespace)
+    echo $maudeout | cellstoxml | xpath "//result/text()" | sed 's/^[ \t]*//' | k2hs
+fi
