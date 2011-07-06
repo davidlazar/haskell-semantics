@@ -13,21 +13,21 @@ kmod HASKELL-DESUGARING is
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
 
-    kvar K       : K
-    kvar KResult : KResult
-    kvar Exp     : Exp
-    kvar Exp0    : Exp
-    kvar Exp1    : Exp
-    kvar BExp    : Exp
-    kvar Rhs     : Rhs
-    kvar Binds   : Binds
-    kvar Decls   : HsList
-    kvar GRhss   : HsList
-    kvar Matches : HsList
-    kvar Pats    : HsList
+    kvar K         : K
+    kvar KResult   : KResult
+    kvar Exp       : Exp
+    kvar Exp0      : Exp
+    kvar Exp1      : Exp
+    kvar BExp      : Exp
+    kvar Rhs       : Rhs
+    kvar Binds     : Binds
+    kvar Decls     : HsList
+    kvar GRhss     : HsList
+    kvar Matches   : HsList
+    kvar Pats      : HsList
     kvar QualStmts : HsList
-    kvar Stmts   : HsList
-    kvar Pat     : Pat
+    kvar Stmts     : HsList
+    kvar Pat       : Pat
 
 
     configuration
