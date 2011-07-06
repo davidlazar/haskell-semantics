@@ -28,9 +28,12 @@ kmod HASKELL-DESUGARING is
     kvar I N : Int
 
     kvar Exp     : Exp
+    kvar Exp0    : Exp
+    kvar Exp1    : Exp
     kvar BExp    : Exp
     kvar Rhs     : Rhs
     kvar Binds   : Binds
+    kvar Decls   : HsList
     kvar GRhss   : HsList
     kvar Matches : HsList
     kvar Pats    : HsList
@@ -317,5 +320,59 @@ kmod HASKELL-DESUGARING is
     rule trGRhssToExp ((:) (GuardedRhs _ ((:) (Qualifier BExp) []) Exp) GRhss) =>
         If BExp Exp (trGRhssToExp GRhss)
         [structural]
+
+
+    /*
+    The dynamic semantics of the expression let { d1 ; ... ; dn } in e0 are
+    captured by this translation: After removing all type signatures, each
+    declaration di is translated into an equation of the form pi = ei, where
+    pi and ei are patterns and expressions respectively, using the translation
+    in Section 4.4.3. Once done, these identities hold, which may be used as a
+    translation into the kernel:
+    */
+
+    /*
+    let {p1=e1; ...; pn=en} in e0  =  let (~p1, ..., ~pn) = (e1, ..., en) in e0
+    */
+
+    rule <k>
+            Let (BDecls Decls) Exp =>
+              Let (BDecls ((:) (PatBind NoLoc (PTuple (getIrrPats Decls))
+                Nothing (UnGuardedRhs (Tuple (getExps Decls)))
+                (BDecls [])) [])) Exp
+         <_/k>
+         if length Decls >Int 1
+
+
+    syntax HsList ::= getIrrPats HsList
+    rule getIrrPats [] => []
+        [structural]
+    rule getIrrPats ((:) (SimplePatBind _ Pat _ _) Decls) => (:) (PIrrPat Pat) (getIrrPats Decls)
+        [structural]
+
+
+    syntax HsList ::= getExps HsList
+    rule getExps [] => []
+        [structural]
+    rule getExps ((:) (SimplePatBind _ _ _ Exp) Decls) => (:) Exp (getExps Decls)
+        [structural]
+
+    /*
+    let p = e1 in e0  =  case e1 of ~p -> e0
+        where no variable in p appears free in e1
+    */
+    // TODO: For now, we skip this equation and blindly apply the equation
+    // below.
+
+    /*
+    let p = e1 in e0  =  let p = fix ( \ ~p -> e1) in e0
+    */
+
+    rule <k>
+            Let (BDecls ((:) (SimplePatBind _ Pat Type Exp1) [])) Exp0 =>
+              Case (App (Var (UnQual (Ident "@fix"))) (Lambda NoLoc ((:) (PIrrPat Pat) []) Exp1))
+                ((:) (Alt NoLoc (PIrrPat Pat) (UnGuardedAlt Exp0) (BDecls [])) [])
+         <_/k>
+
 
 endkm

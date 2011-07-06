@@ -716,7 +716,7 @@ data SrcLoc = SrcLoc
                  | `App Exp Exp                 [strict hybrid]
                  | `NegApp Exp
                  | `Lambda SrcLoc HsList Exp    [strict(3) hybrid]
-                 | `Let Binds Exp               [strict hybrid]
+                 | `Let Binds Exp               [strict]
                  | `If Exp Exp Exp
                  | `Case Exp HsList             [strict hybrid]
                  | `Do HsList
