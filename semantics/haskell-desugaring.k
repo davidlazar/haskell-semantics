@@ -9,6 +9,8 @@ kmod HASKELL-DESUGARING is
     kvar E E1 E2 E3 : Exp
     kvar I N : Int
 
+    kvar K       : K
+    kvar KResult : KResult
     kvar Exp     : Exp
     kvar Exp0    : Exp
     kvar Exp1    : Exp
@@ -33,15 +35,15 @@ kmod HASKELL-DESUGARING is
 
 
     syntax Bag ::= [[ K ]]
-    macro [[ K:K ]] = <T_> <k> K:K </k> <_/T>
+    macro [[ K ]] = <T_> <k> K </k> <_/T>
 
     syntax KResultLabel ::= desugared
     syntax K ::= desugaredProgram List{K}
 
-    rule <T_> <k> KR:KResult </k> <_/T> =>
-           <result> desimplifyProgram(desugaredProgram(eraseKLabel(desugared, KR:KResult))) </result>
+    rule <T_> <k> KResult </k> <_/T> =>
+           <result> desimplifyProgram(desugaredProgram(eraseKLabel(desugared, KResult))) </result>
 
-    rule desugaredProgram(K:K) => K:K
+    rule desugaredProgram(K) => K
 
     syntax K ::= desimplifyProgram K
     macro desimplifyProgram K = visit K applying desimplify if label in SetItem(wklabel('SimplePatBind____))
