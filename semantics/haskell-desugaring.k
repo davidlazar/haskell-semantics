@@ -533,4 +533,17 @@ kmod HASKELL-DESUGARING is
          <_/k>
 
 
+    /*
+    (j)
+
+    case v of { x -> e } = ( \ x -> e ) v
+
+    */
+
+    rule <k>
+            Case V ((:) (Alt _ (PVar Name) (UnGuardedAlt Exp) _) []) =>
+              App (Lambda NoLoc ((:) (PVar Name) []) Exp) V
+         <_/k>
+
+
 endkm
