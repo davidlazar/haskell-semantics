@@ -494,4 +494,14 @@ kmod HASKELL-DESUGARING is
            If BExp Exp (trGAltsToExp Fresh GAlts)
 
 
+    /*
+    (f)
+
+    case v of { _ -> e; _ -> e' } = e
+
+    */
+
+    rule <k> SimpleCase V PWildCard Exp _ => Exp <_/k>
+
+
 endkm
