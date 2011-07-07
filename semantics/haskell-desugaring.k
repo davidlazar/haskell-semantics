@@ -34,6 +34,7 @@ kmod HASKELL-DESUGARING is
     kvar Alt       : Alt
     kvar Fresh     : String
     kvar Literal   : Literal
+    kvar Name      : Name
 
 
     configuration
@@ -517,5 +518,19 @@ kmod HASKELL-DESUGARING is
             SimpleCase V (PLit Literal) Exp Exp' =>
               If (InfixApp V (QVarOp (UnQual (Symbol "=="))) (Lit Literal)) Exp Exp'
          <_/k>
+
+
+    /*
+    (i)
+
+    case v of { x -> e; _ -> e' } = case v of { x -> e }
+
+    */
+
+    rule <k>
+            SimpleCase V (PVar Name) Exp _ =>
+              Case V ((:) (Alt NoLoc (PVar Name) (UnGuardedAlt Exp) (BDecls [])) [])
+         <_/k>
+
 
 endkm
