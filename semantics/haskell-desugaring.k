@@ -33,6 +33,7 @@ kmod HASKELL-DESUGARING is
     kvar Pat       : Pat
     kvar Alt       : Alt
     kvar Fresh     : String
+    kvar Literal   : Literal
 
 
     configuration
@@ -503,5 +504,18 @@ kmod HASKELL-DESUGARING is
 
     rule <k> SimpleCase V PWildCard Exp _ => Exp <_/k>
 
+
+    /*
+    (h)
+
+    case v of { k -> e; _ -> e' } = if (v==k) then e else e'
+    where k is a numeric, character, or string literal. 
+
+    */
+
+    rule <k>
+            SimpleCase V (PLit Literal) Exp Exp' =>
+              If (InfixApp V (QVarOp (UnQual (Symbol "=="))) (Lit Literal)) Exp Exp'
+         <_/k>
 
 endkm
