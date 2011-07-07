@@ -410,6 +410,11 @@ kmod HASKELL-DESUGARING is
     Formal Semantics of Pattern Matching:
     */
 
+    // TODO: equation (a)
+    // TODO: the sort of V and the sorts of intermediate syntax will change
+    // once equation (a) is implemented.
+    kvar V : Exp
+
     /*
     (b)
 
@@ -428,7 +433,7 @@ kmod HASKELL-DESUGARING is
     syntax Exp ::= `NestedCase Exp Alt Exp [strict]
 
     rule <k>
-            Case Exp Alts => trAltsToNestedCase Exp Alts
+            Case V Alts => trAltsToNestedCase V Alts
          <_/k>
          if notBool (singlePVar Alts)
 
@@ -436,7 +441,7 @@ kmod HASKELL-DESUGARING is
     syntax Exp ::= trAltsToNestedCase Exp HsList
     rule trAltsToNestedCase _ [] => App (Var (UnQual (Ident "error"))) (Lit (StringLit "No match"))
         [structural]
-    rule trAltsToNestedCase Exp ((:) Alt Alts) => NestedCase Exp Alt (trAltsToNestedCase Exp Alts)
+    rule trAltsToNestedCase V ((:) Alt Alts) => NestedCase V Alt (trAltsToNestedCase V Alts)
         [structural]
 
 
