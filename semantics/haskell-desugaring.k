@@ -16,6 +16,7 @@ kmod HASKELL-DESUGARING is
     kvar K         : K
     kvar KResult   : KResult
     kvar Exp       : Exp
+    kvar Exp'      : Exp
     kvar Exp0      : Exp
     kvar Exp1      : Exp
     kvar BExp      : Exp
@@ -23,6 +24,7 @@ kmod HASKELL-DESUGARING is
     kvar Binds     : Binds
     kvar Alts      : HsList
     kvar Decls     : HsList
+    kvar GAlts     : HsList
     kvar GRhss     : HsList
     kvar Matches   : HsList
     kvar Pats      : HsList
@@ -30,6 +32,7 @@ kmod HASKELL-DESUGARING is
     kvar Stmts     : HsList
     kvar Pat       : Pat
     kvar Alt       : Alt
+    kvar Fresh     : String
 
 
     configuration
@@ -451,6 +454,44 @@ kmod HASKELL-DESUGARING is
     rule singlePVar ((:) (Alt _ Pat _ _) Alts) => false
         if nonempty Alts orBool getKLabel Pat =/=Bool 'PVar_
         [structural]
+
+
+    /*
+    (c)
+
+      case v of { p | g1 -> e1 ; ...
+                    | gn -> en where { decls }
+                  _      -> e' }
+    = case e' of
+      {y ->  (where y is a new variable)
+       case v of {
+             p -> let { decls } in
+                    if g1 then e1 ... else if gn then en else y ;
+             _ -> y }}
+
+    */
+
+    syntax Exp ::= `SimpleCase Exp Pat Exp Exp [strict]
+
+    rule <k>
+            NestedCase V (Alt _ Pat (UnGuardedAlt Exp1) Binds) Exp' =>
+              SimpleCase V Pat (bindIfNonEmpty Binds Exp1) Exp'
+         <_/k>
+
+    rule <k>
+            NestedCase V (Alt _ Pat (GuardedAlts GAlts) Binds) Exp' =>
+             Case Exp' ((:) (Alt NoLoc (PVar (Ident FreshId)) (UnGuardedAlt
+               (SimpleCase V Pat (bindIfNonEmpty Binds (trGAltsToExp FreshId GAlts))
+                 (Var (UnQual (Ident FreshId))))) (BDecls [])) [])
+         <_/k>
+         <fresh> N => N +Int 1 </fresh>
+         where FreshId = ("@y" +String Int2String(N))
+
+
+    syntax Exp ::= trGAltsToExp String HsList
+    rule trGAltsToExp Fresh [] => Var (UnQual (Ident Fresh))
+    rule trGAltsToExp Fresh ((:) (GuardedAlt _ ((:) (Qualifier BExp) []) Exp) GAlts) =>
+           If BExp Exp (trGAltsToExp Fresh GAlts)
 
 
 endkm
