@@ -10,9 +10,6 @@ maudeout=$(hs2k | simplemaude --stats "[[ %s ]]" haskell-desugaring-test-compile
 maudeerr=$(<$errfile)
 rm -f $errfile
 
-# Print the stats with bright blue color.
-echo -e "\e[94m$maudeerr\e[0m"
-
 # If the '-d' debug flag is set, print the Maude output and stop. Otherwise,
 # continue with the pipeline.
 if [[ $1 == "-d" ]]; then
@@ -21,3 +18,6 @@ else
     # TODO: remove sed from the pipeline (currently used to trim leading whitespace)
     echo $maudeout | cellstoxml | xpath "//result/text()" | sed 's/^[ \t]*//' | k2hs
 fi
+
+# Print the stats with bright blue color.
+echo -e "\e[94m$maudeerr\e[0m"
