@@ -549,4 +549,12 @@ kmod HASKELL-DESUGARING is
          <_/k>
 
 
+    /*
+    Catch-all for simple case expressions unaccounted for above.
+    */
+
+    rule <k> SimpleCase V Pat Exp Exp' => desugared(SimpleCase V Pat Exp Exp') <_/k>
+        if Pat =/=Bool PWildCard andBool getKLabel Pat =/=Bool 'PVar andBool getKLabel Pat =/=Bool 'PLit
+
+
 endkm
