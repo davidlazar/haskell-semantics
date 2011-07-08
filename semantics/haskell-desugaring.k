@@ -69,12 +69,15 @@ kmod HASKELL-DESUGARING is
     */
 
     syntax K ::= desimplifyProgram K
-    macro desimplifyProgram K = visit K applying desimplify if label in SetItem(wklabel('SimplePatBind____))
+    macro desimplifyProgram K = visit K applying desimplify if label in SetItem(wklabel('SimplePatBind____)) SetItem(wklabel('SimpleCase____))
 
     syntax KLabel ::= desimplify
 
     rule desimplify(SimplePatBind Loc Pat Type Exp) => PatBind Loc Pat Type (UnGuardedRhs Exp) (BDecls [])
 
+    rule desimplify(SimpleCase Exp0 Pat Exp Exp') =>
+           Case Exp0 ((:) (Alt NoLoc Pat (UnGuardedAlt Exp) (BDecls []))
+                     ((:) (Alt NoLoc PWildCard (UnGuardedAlt Exp') (BDecls [])) []))
 
     /*
     Wrapper to explicitly mark a piece of syntax as desugared (used
