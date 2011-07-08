@@ -20,4 +20,4 @@ else
 fi
 
 # Print the stats with bright blue color.
-echo -e "\e[94m$maudeerr\e[0m"
+echo -e "\e[94m$maudeerr\e[0m" 1>&2
