@@ -337,7 +337,7 @@ kmod HASKELL-DESUGARING is
 
     */
 
-    syntax Decl ::= `SimplePatBind SrcLoc Pat HsMaybe Exp [hybrid]
+    syntax Decl ::= `SimplePatBind SrcLoc Pat HsMaybe Exp [strict hybrid]
 
     rule <k>
             PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs Binds =>
