@@ -500,6 +500,18 @@ kmod HASKELL-DESUGARING is
 
 
     /*
+    (e)
+
+    case v of { x@p -> e; _ -> e' } = case v of { p -> ( \ x -> e ) v ; _ -> e' }
+
+    */
+
+    rule <k> SimpleCase V (PAsPat Name Pat) Exp Exp' =>
+             SimpleCase V Pat (Lambda NoLoc ((:) (PVar Name) []) Exp) Exp'
+         <_/k>
+
+
+    /*
     (f)
 
     case v of { _ -> e; _ -> e' } = e
