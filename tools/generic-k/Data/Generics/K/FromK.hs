@@ -19,6 +19,7 @@ import Data.Generics
 import Text.Printf
 import Language.K.Core.Syntax
 import Language.Haskell.Exts.Syntax -- Issue 198 (see below)
+import Control.Monad.Instances -- fix for earlier versions of base
 
 fromK :: (Data a) => K -> a
 fromK = defaultFromK
