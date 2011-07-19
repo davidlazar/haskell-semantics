@@ -76,12 +76,12 @@ fromConstrK c ks = unKS $ gunfold s z c
         z = KS ks
 
 -- | Turn the given string into a constructor of the requested result type,
--- failing in the monad if the string doesn't represent a constructor of this
+-- returning 'Left' if the string doesn't represent a constructor of this
 -- data type.
-str2con :: (Monad m) => DataType -> String -> m Constr
+str2con :: DataType -> String -> Either String Constr
 str2con dataType conName =
     case readConstr dataType conName of
-        Just con -> return con
-        Nothing  -> fail failString
+        Just con -> Right con
+        Nothing  -> Left failString
     where failString   = printf formatString (show conName) (show dataType)
           formatString = "Failed to parse %s as a constructor of type %s."
