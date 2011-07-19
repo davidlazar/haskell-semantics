@@ -14,6 +14,7 @@ kmod HASKELL-DESUGARING is
     kvar I N : Int
 
     kvar K         : K
+    kvar Kl        : List{K}
     kvar KResult   : KResult
     kvar Exp       : Exp
     kvar Exp'      : Exp
@@ -513,6 +514,28 @@ kmod HASKELL-DESUGARING is
     rule trGAltsToExp Fresh [] => Var (UnQual (Ident Fresh))
     rule trGAltsToExp Fresh ((:) (GuardedAlt _ ((:) (Qualifier BExp) []) Exp) GAlts) =>
            If BExp Exp (trGAltsToExp Fresh GAlts)
+
+
+    /*
+    (d)
+
+      case v of { ~p -> e; _ -> e' }
+    = (\x1 ... xn -> e ) (case v of { p -> x1 }) ... (case v of { p -> xn })
+      where x1, ..., xn are all the variables in p
+
+    */
+
+    rule <k> SimpleCase V (PIrrPat Pat) Exp Exp' =>
+             unrollIrrPat V Pat PVars (Lambda NoLoc (kListToHsList PVars) Exp)
+         <_/k>
+         where PVars = (extractK 'PVar_ Pat)
+
+    syntax Exp ::= unrollIrrPat Exp Pat List{K} Exp
+    rule unrollIrrPat _ _ .List{K} Exp => Exp
+        [structural]
+    rule unrollIrrPat V Pat ((PVar Name) ,, Kl) Exp => unrollIrrPat V Pat Kl
+      (App Exp (Case V ((:) (Alt NoLoc Pat (UnGuardedAlt (Var (UnQual Name))) (BDecls [])) [])))
+        [structural]
 
 
     /*

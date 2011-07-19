@@ -13,6 +13,11 @@ kmod HASKELL-DESUGARING-HELPERS is
     kvar Decls   : HsList
     kvar HsList  : HsList
     kvar Pats    : HsList
+    kvar Label   : KLabel
+    kvar Label'  : KLabel
+    kvar Kl      : List{K}
+    kvar NeKl    : NeList{K}
+    kvar K       : K
 
 
     syntax SrcLoc ::= `NoLoc
@@ -89,6 +94,24 @@ kmod HASKELL-DESUGARING-HELPERS is
 
     syntax String ::= String ++ String [gather(E e)]
     rule Str1:String ++ Str2:String => Str1:String +String Str2:String
+        [structural]
+
+
+    syntax K ::= extractK KLabel List{K}
+    rule extractK _ .List{K} => .List{K}
+        [structural]
+    rule extractK Label (K ,, NeKl) => extractK Label K ,, extractK Label NeKl
+        [structural]
+    rule extractK Label (Label(Kl)) => Label(Kl)
+        [structural]
+    rule extractK Label (Label'(Kl)) => extractK Label Kl
+        if Label =/=Bool Label'
+        [structural]
+
+    syntax HsList ::= kListToHsList List{K}
+    rule kListToHsList .List{K} => []
+        [structural]
+    rule kListToHsList (K ,, Kl) => (:) K (kListToHsList Kl)
         [structural]
 
 endkm
