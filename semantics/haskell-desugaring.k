@@ -24,6 +24,7 @@ kmod HASKELL-DESUGARING is
     kvar Binds     : Binds
     kvar Alts      : HsList
     kvar Decls     : HsList
+    kvar Exps      : HsList
     kvar GAlts     : HsList
     kvar GRhss     : HsList
     kvar Matches   : HsList
@@ -151,6 +152,21 @@ kmod HASKELL-DESUGARING is
     rule If E E1 E2 => Case E ((:) Alt NoLoc (PApp (UnQual (Ident "True" )) []) (UnGuardedAlt E1) (BDecls [])
                                (:) Alt NoLoc (PApp (UnQual (Ident "False")) []) (UnGuardedAlt E2) (BDecls [])
                                [])
+
+
+    /*
+    The following identity holds:
+
+    [e1, ..., ek] = e1 : (e2 : ( ... (ek : [])))
+
+    where : and [] are constructors for lists, as defined in the Prelude (see
+    Section 6.1.3). The types of e1 through ek must all be the same (call it
+    t), and the type of the overall expression is [t] (see Section 4.1.2).
+    */
+
+    rule <k> ListExp [] => desugared(ListExp []) <_/k>
+
+    rule ListExp ((:) Exp Exps) => InfixApp Exp (QConOp (Special Cons)) (ListExp Exps)
 
 
     /*

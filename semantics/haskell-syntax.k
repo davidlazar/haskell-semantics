@@ -723,7 +723,7 @@ data SrcLoc = SrcLoc
                  | `MDo HsList
                  | `Tuple HsList                [strict hybrid]
                  | `TupleSection HsList
-                 | `ListExp HsList              [strict hybrid]
+                 | `ListExp HsList              [strict]
                  | `Paren Exp
                  | `LeftSection Exp QOp
                  | `RightSection QOp Exp
