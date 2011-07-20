@@ -11,7 +11,7 @@ kmod HASKELL-DESUGARING is
     explicitly in one big kvar block.
     */
     kvar E E1 E2 E3 : Exp
-    kvar I N : Int
+    kvar I I1 I2 N : Int
 
     kvar K         : K
     kvar Kl        : List{K}
@@ -96,6 +96,15 @@ kmod HASKELL-DESUGARING is
 
     rule <k> Lit (IntLit I) => desugared(App (Var (UnQual (Ident "fromInteger"))) (Lit (IntLit I))) <_/k>
 
+    /*
+    The floating point literal f is equivalent to fromRational (n Ratio.% d),
+    where fromRational is a method in class Fractional and Ratio.% constructs
+    a rational from two integers, as defined in the Ratio library. The
+    integers n and d are chosen so that n/d = f.
+    */
+
+    rule Lit (Frac (:% I1 I2)) => App (Var (UnQual (Ident "fromRational")))
+      (InfixApp (Lit (IntLit I1)) (QVarOp (Qual (ModuleName "Ratio") (Symbol "%"))) (Lit (IntLit I2)))
 
     /*
     The following identities hold:

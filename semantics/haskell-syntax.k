@@ -631,7 +631,7 @@ data SrcLoc = SrcLoc
     syntax Literal ::= `Char Int                [hybrid]
                      | `StringLit String        [hybrid]
                      | `IntLit Int
-                     | `Frac HsRational         [hybrid]
+                     | `Frac HsRational
                      | `PrimInt Int
                      | `PrimWord Int
                      | `PrimFloat HsRational
