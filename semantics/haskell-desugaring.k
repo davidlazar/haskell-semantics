@@ -107,6 +107,38 @@ kmod HASKELL-DESUGARING is
       (InfixApp (Lit (IntLit I1)) (QVarOp (Qual (ModuleName "Ratio") (Symbol "%"))) (Lit (IntLit I2)))
 
     /*
+    The following identity holds:
+
+    \ p1 ... pn -> e = \ x1 ... xn -> case (x1, ..., xn) of (p1, ..., pn) -> e
+
+    where the xi are new identifiers.
+    */
+
+    rule <k>
+            Lambda Loc Pats Exp => Lambda Loc freshPVars
+              (Case (listToTuple (freshVarList "x" N arity))
+              ((:) (Alt NoLoc (listToPTuple freshPVars) (UnGuardedAlt Exp) (BDecls [])) []))
+         <_/k>
+         <fresh> N => N +Int arity +Int 1 </fresh>
+         if anyNonTrivialPats Pats
+         where arity = (length Pats)
+           and freshPVars = (freshPVarList "x" N arity)
+
+    rule <k> Lambda Loc Pats Exp => desugared(Lambda Loc Pats Exp) <_/k>
+         if notBool (anyNonTrivialPats Pats)
+
+
+    syntax Bool ::= anyNonTrivialPats HsList
+    rule anyNonTrivialPats [] => false
+        [structural]
+    rule anyNonTrivialPats ((:) Pat Pats) => true
+        if getKLabel Pat =/=Bool 'PVar_
+        [structural]
+    rule anyNonTrivialPats ((:) (PVar _) Pats) => anyNonTrivialPats Pats
+        [structural]
+
+
+    /*
     The following identities hold:
 
     e1 op e2 = (op) e1 e2
