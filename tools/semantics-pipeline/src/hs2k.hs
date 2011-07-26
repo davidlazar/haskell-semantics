@@ -14,8 +14,8 @@
 module Main where
 
 import Data.Generics.K
-import Language.Haskell.Exts.Parser
+import Language.Haskell.Exts (fromParseResult, parseFileContents)
 import Language.K.Core.Pretty.KMode
 
 main :: IO ()
-main = interact ((++ "\n") . prettyPrint . toK . fromParseResult . parseModule)
+main = interact ((++ "\n") . prettyPrint . toK . fromParseResult . parseFileContents)
