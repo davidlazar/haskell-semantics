@@ -12,7 +12,7 @@ kmod HASKELL-SYNTAX-STRUCTS is
     syntax HsMaybe ::= `Nothing    [hybrid]
                      | `Just K     [strict hybrid]
 
-    syntax HsTuple ::= (,) K K
+    syntax HsTuple ::= (,) K K     [strict hybrid]
 
     syntax HsRational ::= :% Int Int  [hybrid]
 
