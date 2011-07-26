@@ -512,10 +512,10 @@ kmod HASKELL-DESUGARING is
 
 
     syntax Bool ::= singlePVar HsList
-    rule singlePVar ((:) (Alt _ (PVar _) _ _) []) => true
+    rule singlePVar ((:) (Alt _ (PVar _) (UnGuardedAlt _) _) []) => true
         [structural]
-    rule singlePVar ((:) (Alt _ Pat _ _) Alts) => false
-        if nonempty Alts orBool getKLabel Pat =/=Bool 'PVar_
+    rule singlePVar ((:) (Alt _ Pat GAs:GuardedAlts _) Alts) => false
+        if nonempty Alts orBool getKLabel Pat =/=Bool 'PVar_ orBool getKLabel GAs =/=Bool 'UnGuardedAlt_
         [structural]
 
 
