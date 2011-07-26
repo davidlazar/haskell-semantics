@@ -24,11 +24,33 @@ main = interact k2hs
 
 k2hs :: String -> String
 k2hs = (++ "\n")
-     . prettyPrint
+     . prettyPrintStyleMode ppStyle ppMode
      . concretizeFix
      . fromK
      . either (error . show) id
      . parseK
+
+ppStyle :: Style
+ppStyle
+    = Style
+    { mode = PageMode
+    , lineLength = 1000
+    , ribbonsPerLine = 1.5
+    }
+
+ppMode :: PPHsMode
+ppMode
+    = PPHsMode
+    { classIndent = 0
+    , doIndent = 0
+    , caseIndent = 0
+    , letIndent = 0
+    , whereIndent = 0
+    , onsideIndent = 1
+    , spacing = True
+    , layout = PPSemiColon
+    , linePragmas = False
+    }
 
 -- | Name of the fresh identifier used for @fix@ in the semantics.
 defaultFixIdent :: String
