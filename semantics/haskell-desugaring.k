@@ -117,7 +117,7 @@ kmod HASKELL-DESUGARING is
     rule <k>
             Lambda Loc Pats Exp => Lambda Loc freshPVars
               (Case (listToTuple (freshVarList "x" N arity))
-              ((:) (Alt NoLoc (listToPTuple freshPVars) (UnGuardedAlt Exp) (BDecls [])) []))
+              ((:) (Alt NoLoc (listToPTuple Pats) (UnGuardedAlt Exp) (BDecls [])) []))
          <_/k>
          <fresh> N => N +Int arity +Int 1 </fresh>
          if anyNonTrivialPats Pats
