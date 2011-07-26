@@ -77,6 +77,10 @@ kmod HASKELL-SYNTAX is
                      | ImportDecl
                      | Assoc
                      | Op
+                     | DataOrNew
+                     | Asst
+                     | TyVarBind
+                     | QualConDecl
 
 
 // Imported from Language.Haskell.Exts.SrcLoc:
@@ -343,7 +347,7 @@ data SrcLoc = SrcLoc
 
     syntax Decl ::= `TypeDecl SrcLoc Name HsList Type
                   | `TypeFamDecl SrcLoc Name HsList HsMaybe
-                  | `DataDecl SrcLoc DataOrNew Context Name HsList HsList HsList
+                  | `DataDecl SrcLoc DataOrNew Context Name HsList HsList HsList  [hybrid]
                   | `GDataDecl SrcLoc DataOrNew Context Name HsList HsMaybe HsList HsList
                   | `DataFamDecl SrcLoc Context Name HsList HsMaybe
                   | `TypeInsDecl SrcLoc Type Type
@@ -592,7 +596,8 @@ data SrcLoc = SrcLoc
     type Context = [Asst]
 */
 
-    syntax Context ::= HsList
+    // TODO: do we need this?
+    syntax Context ::= HsList [hybrid]
 
 /*
     -- | Class assertions.
