@@ -37,8 +37,11 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
 
 
+    // TODO: rename to getPrefixName (or similar)
     syntax String ::= getFunctionName HsList
     rule getFunctionName ((:) (Match _ (Ident Name) _ _ _ _) _) => Name
+        [structural]
+    rule getFunctionName ((:) (Match _ (Symbol Name) _ _ _ _) _) => "(" +String Name +String ")"
         [structural]
 
 
