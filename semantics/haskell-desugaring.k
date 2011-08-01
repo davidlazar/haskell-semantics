@@ -37,6 +37,7 @@ kmod HASKELL-DESUGARING is
     kvar Fresh     : String
     kvar Literal   : Literal
     kvar Name      : Name
+    kvar MaybeType : HsMaybe
 
 
     configuration
@@ -75,7 +76,7 @@ kmod HASKELL-DESUGARING is
 
     syntax KLabel ::= desimplify
 
-    rule desimplify(SimplePatBind Loc Pat Type Exp) => PatBind Loc Pat Type (UnGuardedRhs Exp) (BDecls [])
+    rule desimplify(SimplePatBind Loc Pat MaybeType Exp) => PatBind Loc Pat MaybeType (UnGuardedRhs Exp) (BDecls [])
 
     rule desimplify(SimpleCase Exp0 Pat Exp Exp') =>
            Case Exp0 ((:) (Alt NoLoc Pat (UnGuardedAlt Exp) (BDecls []))
@@ -398,8 +399,8 @@ kmod HASKELL-DESUGARING is
     syntax Decl ::= `SimplePatBind SrcLoc Pat HsMaybe Exp [strict hybrid]
 
     rule <k>
-            PatBind Loc:SrcLoc Pat Type:HsMaybe Rhs Binds =>
-              SimplePatBind Loc Pat Type
+            PatBind Loc:SrcLoc Pat MaybeType Rhs Binds =>
+              SimplePatBind Loc Pat MaybeType
                 (bindIfNonEmpty Binds (trRhsToExp Rhs))
          <_/k>
 
@@ -466,7 +467,7 @@ kmod HASKELL-DESUGARING is
     */
 
     rule <k>
-            Let (BDecls ((:) (SimplePatBind _ Pat Type Exp1) [])) Exp0 =>
+            Let (BDecls ((:) (SimplePatBind _ Pat MaybeType Exp1) [])) Exp0 =>
               Case (App (Var (UnQual (Ident "@fix"))) (Lambda NoLoc ((:) (PIrrPat Pat) []) Exp1))
                 ((:) (Alt NoLoc (PIrrPat Pat) (UnGuardedAlt Exp0) (BDecls [])) [])
          <_/k>
