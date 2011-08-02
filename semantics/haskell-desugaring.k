@@ -512,11 +512,12 @@ kmod HASKELL-DESUGARING is
         [structural]
 
 
+    // TODO: we need a better name for this side condition.
     syntax Bool ::= singlePVar HsList
-    rule singlePVar ((:) (Alt _ (PVar _) (UnGuardedAlt _) _) []) => true
+    rule singlePVar ((:) (Alt _ (PVar _) (UnGuardedAlt _) (BDecls [])) []) => true
         [structural]
-    rule singlePVar ((:) (Alt _ Pat GAs:GuardedAlts _) Alts) => false
-        if nonempty Alts orBool getKLabel Pat =/=Bool 'PVar_ orBool getKLabel GAs =/=Bool 'UnGuardedAlt_
+    rule singlePVar ((:) (Alt _ Pat GAs:GuardedAlts Binds) Alts) => false
+        if nonempty Alts orBool getKLabel Pat =/=Bool 'PVar_ orBool getKLabel GAs =/=Bool 'UnGuardedAlt_ orBool Binds =/=Bool (BDecls [])
         [structural]
 
 
@@ -637,7 +638,7 @@ kmod HASKELL-DESUGARING is
     */
 
     rule <k>
-            Case V ((:) (Alt _ (PVar Name) (UnGuardedAlt Exp) _) []) =>
+            Case V ((:) (Alt _ (PVar Name) (UnGuardedAlt Exp) (BDecls [])) []) =>
               App (Lambda NoLoc ((:) (PVar Name) []) Exp) V
          <_/k>
 
