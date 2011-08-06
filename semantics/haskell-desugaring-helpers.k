@@ -1,15 +1,14 @@
 kmod HASKELL-DESUGARING-HELPERS is
     including K
     including HASKELL-SYNTAX
-    including PL-CONVERSION
 
 
     kvar Exp     : Exp
     kvar Pat     : Pat
-    kvar Count   : Int
-    kvar Fresh   : Int
-    kvar Name    : String
-    kvar Prefix  : String
+    kvar Count   : #Int
+    kvar Fresh   : #Int
+    kvar Name    : #String
+    kvar Prefix  : #String
     kvar Decls   : HsList
     kvar HsList  : HsList
     kvar Pats    : HsList
@@ -32,20 +31,20 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
 
 
-    syntax Int ::= getFunctionArity HsList
+    syntax #Int ::= getFunctionArity HsList
     rule getFunctionArity ((:) (Match _ _ Pats _ _ _) _) => length Pats
         [structural]
 
 
     // TODO: rename to getPrefixName (or similar)
-    syntax String ::= getFunctionName HsList
+    syntax #String ::= getFunctionName HsList
     rule getFunctionName ((:) (Match _ (Ident Name) _ _ _ _) _) => Name
         [structural]
     rule getFunctionName ((:) (Match _ (Symbol Name) _ _ _ _) _) => "(" +String Name +String ")"
         [structural]
 
 
-    syntax HsList ::= freshPVarList String Int Int
+    syntax HsList ::= freshPVarList #String #Int #Int
     rule freshPVarList _ _ 0 => []
         [structural]
     rule freshPVarList Prefix Fresh Count =>
@@ -55,7 +54,7 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
 
 
-    syntax HsList ::= freshVarList String Int Int
+    syntax HsList ::= freshVarList #String #Int #Int
     rule freshVarList _ _ 0 => []
         [structural]
     rule freshVarList Prefix Fresh Count =>
@@ -81,22 +80,22 @@ kmod HASKELL-DESUGARING-HELPERS is
         [structural]
 
 
-    syntax Bool ::= nonempty HsList
+    syntax #Bool ::= nonempty HsList
     rule nonempty [] => false
         [structural]
     rule nonempty ((:) _ _) => true
         [structural]
 
 
-    syntax Int ::= length HsList
+    syntax #Int ::= length HsList
     rule length [] => 0
         [structural]
     rule length ((:) _ HsList) => 1 +Int length HsList
         [structural]
 
 
-    syntax String ::= String ++ String [gather(E e)]
-    rule Str1:String ++ Str2:String => Str1:String +String Str2:String
+    syntax #String ::= #String ++ #String [gather(E e)]
+    rule Str1:#String ++ Str2:#String => Str1:#String +String Str2:#String
         [structural]
 
 

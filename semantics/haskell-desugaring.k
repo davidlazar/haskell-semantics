@@ -2,7 +2,6 @@ kmod HASKELL-DESUGARING is
     including HASKELL-SYNTAX
     including HASKELL-DESUGARING-HELPERS
     including K
-    including PL-CONVERSION
     including VISITOR
 
 
@@ -11,7 +10,7 @@ kmod HASKELL-DESUGARING is
     explicitly in one big kvar block.
     */
     kvar E E1 E2 E3 : Exp
-    kvar I I1 I2 N : Int
+    kvar I I1 I2 N : #Int
 
     kvar K         : K
     kvar Kl        : List{K}
@@ -34,7 +33,7 @@ kmod HASKELL-DESUGARING is
     kvar Stmts     : HsList
     kvar Pat       : Pat
     kvar Alt       : Alt
-    kvar Fresh     : String
+    kvar Fresh     : #String
     kvar Literal   : Literal
     kvar Name      : Name
     kvar MaybeType : HsMaybe
@@ -129,7 +128,7 @@ kmod HASKELL-DESUGARING is
          if notBool (anyNonTrivialPats Pats)
 
 
-    syntax Bool ::= anyNonTrivialPats HsList
+    syntax #Bool ::= anyNonTrivialPats HsList
     rule anyNonTrivialPats [] => false
         [structural]
     rule anyNonTrivialPats ((:) Pat Pats) => true
@@ -513,7 +512,7 @@ kmod HASKELL-DESUGARING is
 
 
     // TODO: we need a better name for this side condition.
-    syntax Bool ::= singlePVar HsList
+    syntax #Bool ::= singlePVar HsList
     rule singlePVar ((:) (Alt _ (PVar _) (UnGuardedAlt _) (BDecls [])) []) => true
         [structural]
     rule singlePVar ((:) (Alt _ Pat GAs:GuardedAlts Binds) Alts) => false
@@ -553,7 +552,7 @@ kmod HASKELL-DESUGARING is
          where FreshId = ("@y" +String Int2String(N))
 
 
-    syntax Exp ::= trGAltsToExp String HsList
+    syntax Exp ::= trGAltsToExp #String HsList
     rule trGAltsToExp Fresh [] => Var (UnQual (Ident Fresh))
     rule trGAltsToExp Fresh ((:) (GuardedAlt _ ((:) (Qualifier BExp) []) Exp) GAlts) =>
            If BExp Exp (trGAltsToExp Fresh GAlts)

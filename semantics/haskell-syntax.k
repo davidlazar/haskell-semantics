@@ -92,7 +92,7 @@ data SrcLoc = SrcLoc
     }
 */
 
-    syntax SrcLoc ::= `SrcLoc String Int Int
+    syntax SrcLoc ::= `SrcLoc #String #Int #Int
 
 // Imported from Language.Haskell.Exts.Annotated.Syntax:
 /*
@@ -107,7 +107,7 @@ data SrcLoc = SrcLoc
     newtype ModuleName = ModuleName String
 */
 
-    syntax ModuleName ::= `ModuleName String
+    syntax ModuleName ::= `ModuleName #String
 
 /*
     -- | Constructors with special syntax.
@@ -126,7 +126,7 @@ data SrcLoc = SrcLoc
     syntax SpecialCon ::= `UnitCon
                         | `ListCon
                         | `FunCon
-                        | `TupleCon Boxed Int
+                        | `TupleCon Boxed #Int
                         | `Cons
                         | `UnboxedSingleCon
 
@@ -150,8 +150,8 @@ data SrcLoc = SrcLoc
         | Symbol String   -- ^ /varsym/ or /consym/
 */
 
-    syntax Name ::= `Ident String
-                  | `Symbol String
+    syntax Name ::= `Ident #String
+                  | `Symbol #String
 
 /*
     -- | An implicit parameter name.
@@ -160,8 +160,8 @@ data SrcLoc = SrcLoc
         | IPLin String -- ^ %/ident/, linear implicit parameter
 */
 
-    syntax IPName ::= `IPDup String
-                    | `IPLin String
+    syntax IPName ::= `IPDup #String
+                    | `IPLin #String
 
 
 /*
@@ -242,7 +242,7 @@ data SrcLoc = SrcLoc
         }
 */
 
-    syntax ImportDecl ::= `ImportDecl SrcLoc ModuleName Bool Bool HsMaybe HsMaybe HsMaybe
+    syntax ImportDecl ::= `ImportDecl SrcLoc ModuleName #Bool #Bool HsMaybe HsMaybe HsMaybe
 
 /*
     -- | An import specification, representing a single explicit item imported
@@ -308,7 +308,7 @@ data SrcLoc = SrcLoc
          -- ^ An declaration of a type class instance
          | DerivDecl    SrcLoc Context QName [Type]
          -- ^ A standalone deriving declaration
-         | InfixDecl    SrcLoc Assoc Int [Op]
+         | InfixDecl    SrcLoc Assoc #Int [Op]
          -- ^ A declaration of operator fixity
          | DefaultDecl  SrcLoc [Type]
          -- ^ A declaration of default types
@@ -356,21 +356,21 @@ data SrcLoc = SrcLoc
                   | `ClassDecl SrcLoc Context Name HsList HsList HsList
                   | `InstDecl SrcLoc Context QName HsList HsList
                   | `DerivDecl SrcLoc Context QName HsList
-                  | `InfixDecl SrcLoc Assoc Int HsList                  [hybrid]
+                  | `InfixDecl SrcLoc Assoc #Int HsList                  [hybrid]
                   | `DefaultDecl SrcLoc HsList
                   | `SpliceDecl SrcLoc Exp
                   | `TypeSig SrcLoc HsList Type                         [hybrid]
                   | `FunBind HsList
                   | `PatBind SrcLoc Pat HsMaybe Rhs Binds               [strict(4 5)]
-                  | `ForImp SrcLoc CallConv Safety String Name Type
-                  | `ForExp SrcLoc CallConv String Name Type
+                  | `ForImp SrcLoc CallConv Safety #String Name Type
+                  | `ForExp SrcLoc CallConv #String Name Type
                   | `RulePragmaDecl SrcLoc HsList
                   | `DeprPragmaDecl SrcLoc HsList
                   | `WarnPragmaDecl SrcLoc HsList
-                  | `InlineSig SrcLoc Bool Activation QName
+                  | `InlineSig SrcLoc #Bool Activation QName
                   | `InlineConlikeSig SrcLoc Activation QName
                   | `SpecSig SrcLoc QName HsList
-                  | `SpecInlineSig SrcLoc Bool Activation QName HsList
+                  | `SpecInlineSig SrcLoc #Bool Activation QName HsList
                   | `InstSig SrcLoc Context QName HsList
                   | `AnnPragma SrcLoc Annotation
 
@@ -633,16 +633,16 @@ data SrcLoc = SrcLoc
         | PrimString String     -- ^ unboxed string literal
 */
 
-    syntax Literal ::= `Char Int                [hybrid]
-                     | `StringLit String        [hybrid]
-                     | `IntLit Int
+    syntax Literal ::= `Char #Int                [hybrid]
+                     | `StringLit #String        [hybrid]
+                     | `IntLit #Int
                      | `Frac HsRational
-                     | `PrimInt Int
-                     | `PrimWord Int
+                     | `PrimInt #Int
+                     | `PrimWord #Int
                      | `PrimFloat HsRational
                      | `PrimDouble HsRational
-                     | `PrimChar Int
-                     | `PrimString String
+                     | `PrimChar #Int
+                     | `PrimString #String
 
 /*
     -- | Haskell expressions.
@@ -745,14 +745,14 @@ data SrcLoc = SrcLoc
                  | `TypQuote QName
                  | `BracketExp Bracket
                  | `SpliceExp Splice
-                 | `QuasiQuote String String
+                 | `QuasiQuote #String #String
                  | `XTag SrcLoc XName HsList HsMaybe HsList
                  | `XETag SrcLoc XName HsList HsMaybe
-                 | `XPcdata String
+                 | `XPcdata #String
                  | `XExpTag Exp
-                 | `CorePragma String Exp
-                 | `SCCPragma String Exp
-                 | `GenPragma String HsTuple HsTuple Exp
+                 | `CorePragma #String Exp
+                 | `SCCPragma #String Exp
+                 | `GenPragma #String HsTuple HsTuple Exp
                  | `Proc SrcLoc Pat Exp
                  | `LeftArrApp Exp Exp
                  | `RightArrApp Exp Exp
@@ -767,8 +767,8 @@ data SrcLoc = SrcLoc
         | XDomName String String    -- <dom:name ...
 */
 
-    syntax XName ::= `XName String
-                   | `XDomName String String
+    syntax XName ::= `XName #String
+                   | `XDomName #String #String
 
 /*
     -- | An xml attribute, which is a name-expression pair.
@@ -797,7 +797,7 @@ data SrcLoc = SrcLoc
         | ParenSplice Exp       -- ^ parenthesised expression splice: @$(/exp/)@
 */
 
-    syntax Splice ::= `IdSplice String
+    syntax Splice ::= `IdSplice #String
                     | `ParenSplice Exp
 
 /*
@@ -808,7 +808,7 @@ data SrcLoc = SrcLoc
 */
 
     syntax Safety ::= `PlayRisky
-                    | `PlaySafe Bool
+                    | `PlaySafe #Bool
 
 /*
     -- | The calling convention of a foreign function call.
@@ -831,7 +831,7 @@ data SrcLoc = SrcLoc
 */
 
     syntax ModulePragma ::= `LanguagePragma SrcLoc HsList
-                          | `OptionsPragma SrcLoc HsMaybe String
+                          | `OptionsPragma SrcLoc HsMaybe #String
                           | `AnnModulePragma SrcLoc Annotation
 
 /*
@@ -843,16 +843,16 @@ data SrcLoc = SrcLoc
 */
 
     syntax Activation ::= `AlwaysActive
-                        | `ActiveFrom Int
-                        | `ActiveUntil Int
+                        | `ActiveFrom #Int
+                        | `ActiveUntil #Int
 
 /*
     -- | The body of a RULES pragma.
     data Rule
-        = Rule String Activation (Maybe [RuleVar]) Exp Exp
+        = Rule #String Activation (Maybe [RuleVar]) Exp Exp
 */
 
-    syntax Rule ::= `Rule String Activation HsMaybe Exp Exp
+    syntax Rule ::= `Rule #String Activation HsMaybe Exp Exp
 
 /*
     -- | Variables used in a RULES pragma, optionally annotated with types
@@ -872,8 +872,8 @@ data SrcLoc = SrcLoc
         | WarnText String
 */
 
-    syntax WarningText ::= `DeprText String
-                         | `WarnText String
+    syntax WarningText ::= `DeprText #String
+                         | `WarnText #String
 
 /*
     -- | A pattern, to be matched against a value.
@@ -909,7 +909,7 @@ data SrcLoc = SrcLoc
     syntax Pat ::= `PVar Name
                  | `PLit Literal
                  | `PNeg Pat
-                 | `PNPlusK Name Int
+                 | `PNPlusK Name #Int
                  | `PInfixApp Pat QName Pat
                  | `PApp QName HsList
                  | `PTuple HsList
@@ -924,11 +924,11 @@ data SrcLoc = SrcLoc
                  | `PRPat HsList
                  | `PXTag SrcLoc XName HsList HsMaybe HsList
                  | `PXETag SrcLoc XName HsList HsMaybe
-                 | `PXPcdata String
+                 | `PXPcdata #String
                  | `PXPatTag Pat
                  | `PXRPats HsList
                  | `PExplTypeArg QName Type
-                 | `PQuasiQuote String String
+                 | `PQuasiQuote #String #String
                  | `PBangPat Pat
 
 /*
