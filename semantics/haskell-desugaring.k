@@ -51,7 +51,7 @@ kmod HASKELL-DESUGARING is
     Helper to initialize the K cell with a program.
     */
     syntax Bag ::= [[ K ]]
-    macro [[ K ]] = <T_> <k> K </k> <_/T>
+    macro [[ K ]] = <T>... <k> K </k> ...</T>
 
 
     /*
@@ -59,7 +59,7 @@ kmod HASKELL-DESUGARING is
     result cell and perform post-desugaring tasks.
     */
 
-    rule <T_> <k> KResult </k> <_/T> =>
+    rule <T>... <k> KResult </k> ...</T> =>
            <result> desimplifyProgram(desugaredProgram(eraseKLabel(desugared, KResult))) </result>
 
     syntax K ::= desugaredProgram List{K}
@@ -94,7 +94,7 @@ kmod HASKELL-DESUGARING is
     a method in class Num (see Section 6.4.1).
     */
 
-    rule <k> Lit (IntLit I) => desugared(App (Var (UnQual (Ident "fromInteger"))) (Lit (IntLit I))) <_/k>
+    rule <k> Lit (IntLit I) => desugared(App (Var (UnQual (Ident "fromInteger"))) (Lit (IntLit I))) ...</k>
 
     /*
     The floating point literal f is equivalent to fromRational (n Ratio.% d),
@@ -118,13 +118,13 @@ kmod HASKELL-DESUGARING is
             Lambda Loc Pats Exp => Lambda Loc freshPVars
               (Case (listToTuple (freshVarList "x" N arity))
               ((:) (Alt NoLoc (listToPTuple Pats) (UnGuardedAlt Exp) (BDecls [])) []))
-         <_/k>
+         ...</k>
          <fresh> N => N +Int arity +Int 1 </fresh>
          if anyNonTrivialPats Pats
          where arity = (length Pats)
            and freshPVars = (freshPVarList "x" N arity)
 
-    rule <k> Lambda Loc Pats Exp => desugared(Lambda Loc Pats Exp) <_/k>
+    rule <k> Lambda Loc Pats Exp => desugared(Lambda Loc Pats Exp) ...</k>
          if notBool (anyNonTrivialPats Pats)
 
 
@@ -169,7 +169,7 @@ kmod HASKELL-DESUGARING is
              RightSection Q:QOp E =>
                Lambda NoLoc ((:) (PVar (Ident FreshId)) [])
                  (InfixApp (Var (UnQual (Ident FreshId))) Q:QOp E)
-         <_/k>
+         ...</k>
          <fresh> N => N +Int 1 </fresh>
          where FreshId = ("@x" +String Int2String(N))
 
@@ -177,7 +177,7 @@ kmod HASKELL-DESUGARING is
              LeftSection E Q:QOp =>
                Lambda NoLoc ((:) (PVar (Ident FreshId)) [])
                  (InfixApp E Q:QOp (Var (UnQual (Ident FreshId))))
-         <_/k>
+         ...</k>
          <fresh> N => N +Int 1 </fresh>
          where FreshId = ("@x" +String Int2String(N))
 
@@ -206,7 +206,7 @@ kmod HASKELL-DESUGARING is
     t), and the type of the overall expression is [t] (see Section 4.1.2).
     */
 
-    rule <k> ListExp [] => desugared(ListExp []) <_/k>
+    rule <k> ListExp [] => desugared(ListExp []) ...</k>
 
     rule ListExp ((:) Exp Exps) => InfixApp Exp (QConOp (Special Cons)) (ListExp Exps)
 
@@ -274,7 +274,7 @@ kmod HASKELL-DESUGARING is
                          [])))
                      []))
                  (App (App (Var (UnQual (Ident "concatMap"))) (Var (UnQual (Ident FreshId)))) E1)
-         <_/k>
+         ...</k>
          <fresh> N => N +Int 1 </fresh>
          if nonempty QualStmts
          where FreshId = ("@ok" +String Int2String(N))
@@ -317,7 +317,7 @@ kmod HASKELL-DESUGARING is
                         [])))
                     []))
                 (InfixApp E (QVarOp (UnQual (Symbol ">>="))) (Var (UnQual (Ident FreshId))))
-         <_/k>
+         ...</k>
          <fresh> N => N +Int 1 </fresh>
          if nonempty Stmts
          where FreshId = ("@ok" +String Int2String(N))
@@ -345,7 +345,7 @@ kmod HASKELL-DESUGARING is
                 (Lambda NoLoc (freshPVarList "x" N arity)
                   (Case (listToTuple (freshVarList "x" N arity)) (trMatchesToAlts Matches))))
               (BDecls [])
-         <_/k>
+         ...</k>
          <fresh> N => N +Int arity +Int 1 </fresh>
          where arity = getFunctionArity Matches
            and name  = getFunctionName  Matches
@@ -401,7 +401,7 @@ kmod HASKELL-DESUGARING is
             PatBind Loc:SrcLoc Pat MaybeType Rhs Binds =>
               SimplePatBind Loc Pat MaybeType
                 (bindIfNonEmpty Binds (trRhsToExp Rhs))
-         <_/k>
+         ...</k>
 
 
     syntax Exp ::= trRhsToExp Rhs
@@ -437,7 +437,7 @@ kmod HASKELL-DESUGARING is
               Let (BDecls ((:) (PatBind NoLoc (PTuple (getIrrPats Decls))
                 Nothing (UnGuardedRhs (Tuple (getExps Decls)))
                 (BDecls [])) [])) Exp
-         <_/k>
+         ...</k>
          if length Decls >Int 1
 
 
@@ -469,7 +469,7 @@ kmod HASKELL-DESUGARING is
             Let (BDecls ((:) (SimplePatBind _ Pat MaybeType Exp1) [])) Exp0 =>
               Case (App (Var (UnQual (Ident "@fix"))) (Lambda NoLoc ((:) (PIrrPat Pat) []) Exp1))
                 ((:) (Alt NoLoc (PIrrPat Pat) (UnGuardedAlt Exp0) (BDecls [])) [])
-         <_/k>
+         ...</k>
 
 
     /*
@@ -500,7 +500,7 @@ kmod HASKELL-DESUGARING is
 
     rule <k>
             Case V Alts => trAltsToNestedCase V Alts
-         <_/k>
+         ...</k>
          if notBool (singlePVar Alts)
 
 
@@ -540,14 +540,14 @@ kmod HASKELL-DESUGARING is
     rule <k>
             NestedCase V (Alt _ Pat (UnGuardedAlt Exp1) Binds) Exp' =>
               SimpleCase V Pat (bindIfNonEmpty Binds Exp1) Exp'
-         <_/k>
+         ...</k>
 
     rule <k>
             NestedCase V (Alt _ Pat (GuardedAlts GAlts) Binds) Exp' =>
              Case Exp' ((:) (Alt NoLoc (PVar (Ident FreshId)) (UnGuardedAlt
                (SimpleCase V Pat (bindIfNonEmpty Binds (trGAltsToExp FreshId GAlts))
                  (Var (UnQual (Ident FreshId))))) (BDecls [])) [])
-         <_/k>
+         ...</k>
          <fresh> N => N +Int 1 </fresh>
          where FreshId = ("@y" +String Int2String(N))
 
@@ -569,7 +569,7 @@ kmod HASKELL-DESUGARING is
 
     rule <k> SimpleCase V (PIrrPat Pat) Exp Exp' =>
              unrollIrrPat V Pat PVars (Lambda NoLoc (kListToHsList PVars) Exp)
-         <_/k>
+         ...</k>
          where PVars = (extractK 'PVar_ Pat)
 
     syntax Exp ::= unrollIrrPat Exp Pat List{K} Exp
@@ -589,7 +589,7 @@ kmod HASKELL-DESUGARING is
 
     rule <k> SimpleCase V (PAsPat Name Pat) Exp Exp' =>
              SimpleCase V Pat (Lambda NoLoc ((:) (PVar Name) []) Exp) Exp'
-         <_/k>
+         ...</k>
 
 
     /*
@@ -599,7 +599,7 @@ kmod HASKELL-DESUGARING is
 
     */
 
-    rule <k> SimpleCase V PWildCard Exp _ => Exp <_/k>
+    rule <k> SimpleCase V PWildCard Exp _ => Exp ...</k>
 
 
     /*
@@ -613,7 +613,7 @@ kmod HASKELL-DESUGARING is
     rule <k>
             SimpleCase V (PLit Literal) Exp Exp' =>
               If (InfixApp V (QVarOp (UnQual (Symbol "=="))) (Lit Literal)) Exp Exp'
-         <_/k>
+         ...</k>
 
 
     /*
@@ -626,7 +626,7 @@ kmod HASKELL-DESUGARING is
     rule <k>
             SimpleCase V (PVar Name) Exp _ =>
               Case V ((:) (Alt NoLoc (PVar Name) (UnGuardedAlt Exp) (BDecls [])) [])
-         <_/k>
+         ...</k>
 
 
     /*
@@ -639,14 +639,14 @@ kmod HASKELL-DESUGARING is
     rule <k>
             Case V ((:) (Alt _ (PVar Name) (UnGuardedAlt Exp) (BDecls [])) []) =>
               App (Lambda NoLoc ((:) (PVar Name) []) Exp) V
-         <_/k>
+         ...</k>
 
 
     /*
     Catch-all for simple case expressions unaccounted for above.
     */
 
-    rule <k> SimpleCase V Pat Exp Exp' => desugared(SimpleCase V Pat Exp Exp') <_/k>
+    rule <k> SimpleCase V Pat Exp Exp' => desugared(SimpleCase V Pat Exp Exp') ...</k>
         if Pat =/=Bool PWildCard andBool getKLabel Pat =/=Bool 'PVar andBool getKLabel Pat =/=Bool 'PLit
 
 
