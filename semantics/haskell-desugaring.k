@@ -562,7 +562,7 @@ kmod HASKELL-DESUGARING is
     (d)
 
       case v of { ~p -> e; _ -> e' }
-    = (\x1 ... xn -> e ) (case v of { p -> x1 }) ... (case v of { p -> xn })
+    = (\x1 ... xn -> e) (case v of { p -> x1 }) ... (case v of { p -> xn })
       where x1, ..., xn are all the variables in p
 
     */
