@@ -647,7 +647,7 @@ kmod HASKELL-DESUGARING is
     */
 
     rule <k> SimpleCase V Pat Exp Exp' => desugared(SimpleCase V Pat Exp Exp') ...</k>
-        if Pat =/=Bool PWildCard andBool getKLabel Pat =/=Bool 'PVar andBool getKLabel Pat =/=Bool 'PLit andBool getKLabel Pat =/=Bool 'PIrrPat
+        if Pat =/=Bool PWildCard andBool getKLabel Pat =/=Bool 'PVar andBool getKLabel Pat =/=Bool 'PLit andBool getKLabel Pat =/=Bool 'PIrrPat_
 
 
 endkm
