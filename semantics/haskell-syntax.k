@@ -139,7 +139,7 @@ data SrcLoc = SrcLoc
         | Special SpecialCon      -- ^ built-in constructor with special syntax
 */
 
-    syntax QName ::= `Qual  ModuleName Name
+    syntax QName ::= `Qual ModuleName Name
                    | `UnQual Name
                    | `Special SpecialCon
 
