@@ -1,0 +1,26 @@
+A small collection of Haskell 98 test cases.
+
+
+Unless otherwise noted (here, or in the source files), I am the
+author of most of these test cases.
+
+
+Notes about some of the test cases:
+
+
+* quine1.hs
+
+Author: Jon Fairbairn (Jon.Fairbairn@cl.cam.ac.uk)
+
+
+* Jon.hs
+
+Jon Fairbairn's entry in the "0th International Obfuscated Haskell Code Contest"
+http://web.archive.org/web/20060103015711/http://iohc.mgoetze.net/winners.html
+http://web.archive.org/web/20060103015711/http://iohc.mgoetze.net/Jon.hs
+
+The file linked above is ISO-8859 encoded. This made GHC unhappy so I used
+
+iconv --from-code=ISO-8859-1 --to-code=UTF-8 Jon.hs
+
+to convert the file to UTF-8.

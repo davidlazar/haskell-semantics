@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# A very simple test harness.
+
+# Currently only tests the desugarer by comparing the output of running the
+# input file with runghc to the output running the input file through the
+# desugarer and then runghc.
+
+
+if [[ "$#" -gt 0 ]]; then
+    tests="$@"
+else
+    tests=$(find -type f -name "*.hs" | sort)
+fi
+
+desugar="$HASKELL_SEMANTICS/tools/desugar"
+
+# To execute tests completely in the semantics, we'd replace runghc below
+# with "runsemantics", which runs the semantics of the Haskell Kernel.
+runhaskell="runghc -w"
+
+teststotal=0
+testspassed=0
+
+for test in $tests; do
+    let teststotal++
+    echo "Test: $(basename $test)"
+
+    actual=$(cat $test | $desugar | $runhaskell)
+    actual_code=$?
+
+    expect=$($runhaskell $test)
+    expect_code=$?
+
+
+    if [[ "$actual" == "$expect" && $actual_code == $expect_code ]]; then
+        echo -e "\e[92mPassed\e[0m"
+        let testspassed++
+    else
+        echo -e "\e[91mFailed\e[0m"
+    fi
+
+    echo
+
+done
+
+let testsfailed=teststotal-testspassed
+if (( testsfailed > 0 )); then
+    echo -e "\e[91m$testsfailed of $teststotal tests failed!\e[0m"
+else
+    echo -e "\e[92m$testspassed of $teststotal tests passed!\e[0m"
+fi
+
+exit $testsfailed
