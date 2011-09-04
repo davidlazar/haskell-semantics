@@ -39,6 +39,8 @@ kmod HASKELL-DESUGARING is
     kvar QName     : QName
     kvar QOp       : QOp
     kvar MaybeType : HsMaybe
+    kvar Pat1      : Pat
+    kvar Pat2      : Pat
 
 
     configuration
@@ -155,6 +157,8 @@ kmod HASKELL-DESUGARING is
     syntax Exp ::= fromInfix QOp
     rule fromInfix(QVarOp QName) => Var QName [structural]
     rule fromInfix(QConOp QName) => Con QName [structural]
+
+    rule PInfixApp Pat1 QName Pat2 => PApp QName ((:) Pat1 ((:) Pat2 []))
 
 
     /*
