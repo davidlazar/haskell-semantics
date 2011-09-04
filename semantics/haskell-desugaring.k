@@ -36,6 +36,7 @@ kmod HASKELL-DESUGARING is
     kvar Fresh     : #String
     kvar Literal   : Literal
     kvar Name      : Name
+    kvar QName     : QName
     kvar MaybeType : HsMaybe
 
 
@@ -151,8 +152,8 @@ kmod HASKELL-DESUGARING is
     rule InfixApp E1 Q:QOp E2 => App (App fromInfix(Q:QOp) E1) E2
 
     syntax Exp ::= fromInfix QOp
-    rule fromInfix(QVarOp QN:QName) => Var QN:QName [structural]
-    rule fromInfix(QConOp QN:QName) => Con QN:QName [structural]
+    rule fromInfix(QVarOp QName) => Var QName [structural]
+    rule fromInfix(QConOp QName) => Con QName [structural]
 
 
     /*
