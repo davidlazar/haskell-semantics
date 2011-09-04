@@ -219,6 +219,8 @@ kmod HASKELL-DESUGARING is
 
     rule Paren E => E
 
+    rule PParen Pat => Pat
+
 
     /*
     Arithmetic sequences satisfy these identities:
