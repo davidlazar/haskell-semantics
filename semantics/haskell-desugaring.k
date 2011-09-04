@@ -217,6 +217,12 @@ kmod HASKELL-DESUGARING is
     rule ListExp ((:) Exp Exps) => InfixApp Exp (QConOp (Special Cons)) (ListExp Exps)
 
 
+    rule PList ((:) Pat []) => PApp (Special Cons) ((:) Pat ((:) (PList []) []))
+
+    rule PList ((:) Pat Pats) => PApp (Special Cons) ((:) Pat ((:) (PList Pats) []))
+        if nonempty Pats
+
+
     /*
     (e) is equivalent to e.
     */
