@@ -37,6 +37,7 @@ kmod HASKELL-DESUGARING is
     kvar Literal   : Literal
     kvar Name      : Name
     kvar QName     : QName
+    kvar QOp       : QOp
     kvar MaybeType : HsMaybe
 
 
@@ -149,7 +150,7 @@ kmod HASKELL-DESUGARING is
 
     rule NegApp E => App (Var (UnQual (Ident "negate"))) E
 
-    rule InfixApp E1 Q:QOp E2 => App (App fromInfix(Q:QOp) E1) E2
+    rule InfixApp E1 QOp E2 => App (App fromInfix(QOp) E1) E2
 
     syntax Exp ::= fromInfix QOp
     rule fromInfix(QVarOp QName) => Var QName [structural]
@@ -167,17 +168,17 @@ kmod HASKELL-DESUGARING is
     */
 
     rule <k>
-             RightSection Q:QOp E =>
+             RightSection QOp E =>
                Lambda NoLoc ((:) (PVar (Ident FreshId)) [])
-                 (InfixApp (Var (UnQual (Ident FreshId))) Q:QOp E)
+                 (InfixApp (Var (UnQual (Ident FreshId))) QOp E)
          ...</k>
          <fresh> N => N +Int 1 </fresh>
          where FreshId = ("@x" +String Int2String(N))
 
     rule <k>
-             LeftSection E Q:QOp =>
+             LeftSection E QOp =>
                Lambda NoLoc ((:) (PVar (Ident FreshId)) [])
-                 (InfixApp E Q:QOp (Var (UnQual (Ident FreshId))))
+                 (InfixApp E QOp (Var (UnQual (Ident FreshId))))
          ...</k>
          <fresh> N => N +Int 1 </fresh>
          where FreshId = ("@x" +String Int2String(N))
