@@ -224,6 +224,35 @@ kmod HASKELL-DESUGARING is
 
 
     /*
+    (e1, ..., ek) for k >= 2 is an instance of a k-tuple as defined in the
+    Prelude, and requires no translation. If t1 through tk are the types
+    of e1 through ek, respectively, then the type of the resulting tuple
+    is (t1, ..., tk) (see Section 4.1.2).
+    */
+
+    /*
+    NB: Although the Report does not specify any translation for tuples,
+    we apply the following equation
+
+        (e_1, ..., e_n) => (,,, ... (n-1 commas)) e_1 ... e_n
+
+    in order to simplify the pattern matching semantics; tuples would be a
+    special case otherwise.
+    */
+
+    rule Tuple Exps => uninfixTuple (Con (Special (TupleCon Boxed (length Exps)))) Exps
+
+    rule PTuple Pats => PApp (Special (TupleCon Boxed (length Pats))) Pats
+
+    syntax Exp ::= uninfixTuple Exp HsList
+    rule uninfixTuple Exp ((:) Exp' []) => App Exp Exp'
+        [structural]
+    rule uninfixTuple Exp ((:) Exp' Exps) => uninfixTuple (App Exp Exp') Exps
+        if nonempty Exps
+        [structural]
+
+
+    /*
     (e) is equivalent to e.
     */
 
